@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Animal Motion Tracker Simple Auto Track</title>
+  <style>
+    :root,[data-theme="light"]{--bg:#f7f6f2;--surface:#f9f8f5;--surface2:#fbfbf9;--offset:#edeae5;--border:#d4d1ca;--text:#28251d;--muted:#69665f;--primary:#01696f;--warn:#da7101;--err:#a13544;--ok:#437a22;--radius:16px;--font:Arial,Helvetica,sans-serif}
+    [data-theme="dark"]{--bg:#171614;--surface:#1c1b19;--surface2:#201f1d;--offset:#22211f;--border:#393836;--text:#cdccca;--muted:#a3a19d;--primary:#4f98a3;--warn:#fdab43;--err:#dd6974;--ok:#437a22}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.55}button,input{font:inherit;color:inherit}button{cursor:pointer;border:none}main{max-width:1460px;margin:0 auto;padding:20px;display:grid;gap:20px}.top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.top h1{margin:0;font-size:2rem}.top p{margin:8px 0 0;color:var(--muted);max-width:76ch}.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:grid;gap:14px}.grid2{display:grid;grid-template-columns:1.08fr .92fr;gap:20px}.viewer{display:grid;grid-template-columns:1fr 1fr;gap:20px}.metrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px}.metric{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px}.metric span{display:block;font-size:.8rem;text-transform:uppercase;color:var(--muted)}.metric strong{display:block;margin-top:6px;font-size:1.28rem}.toolbar{display:flex;flex-wrap:wrap;gap:10px}.btn,.filebtn{min-height:42px;padding:0 16px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;position:relative} .btn[data-tooltip]:hover::after,.filebtn[data-tooltip]:hover::after{content:attr(data-tooltip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 10px);background:rgba(20,20,20,.94);color:#fff;padding:8px 10px;border-radius:8px;font-size:.82rem;line-height:1.4;white-space:nowrap;max-width:260px;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.25)} .btn[data-tooltip]:hover::before,.filebtn[data-tooltip]:hover::before{content:'';position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 4px);border:6px solid transparent;border-top-color:rgba(20,20,20,.94);z-index:50} .help-tip{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-left:6px;border-radius:999px;background:rgba(120,160,255,.18);border:1px solid rgba(120,160,255,.35);color:#9dc0ff;font-size:.78rem;font-weight:700;cursor:help;position:relative;vertical-align:middle} .help-tip:hover::after{content:attr(data-tooltip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 10px);background:rgba(20,20,20,.96);color:#fff;padding:8px 10px;border-radius:8px;font-size:.82rem;line-height:1.4;white-space:normal;min-width:180px;max-width:260px;z-index:60;box-shadow:0 8px 24px rgba(0,0,0,.25)} .help-tip:hover::before{content:'';position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 4px);border:6px solid transparent;border-top-color:rgba(20,20,20,.96);z-index:60} .label-row{display:flex;align-items:center;gap:6px}.btn-primary,.filebtn{background:var(--primary);color:#fff}.btn-secondary{background:var(--offset);border:1px solid var(--border)}.theme{background:var(--surface);border:1px solid var(--border)}.file-input{position:absolute;left:-9999px}.status{padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);color:var(--muted)}.status.warn{background:#4d3815;color:#ffd9a1}.status.error{background:#4f2028;color:#ffd1d7}.status.success{background:#203b1f;color:#d8f3cb}.small{font-size:.84rem;color:var(--muted)}.progresswrap{display:grid;gap:8px}.progresshead{display:flex;justify-content:space-between;gap:12px;font-size:.92rem;color:var(--muted)}.progress{height:12px;border-radius:999px;background:var(--offset);overflow:hidden}.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--warn))}.fieldgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field{display:grid;gap:8px}.field label{font-size:.82rem;text-transform:uppercase;color:var(--muted)}.field input{min-height:42px;padding:0 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface2)}.stagewrap{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:10px;display:grid;gap:10px}.stage{width:100%;background:#10171f;border-radius:12px;display:grid;place-items:center;overflow:hidden}.canvasBox{width:100%;display:grid;place-items:center;background:#10171f;border-radius:12px;overflow:hidden}.fitCanvas{display:block;max-width:100%;height:auto;background:#10171f}.statsBox{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;display:grid;gap:10px}.statsRow{display:flex;justify-content:space-between;gap:12px;border-bottom:1px dashed var(--border);padding-bottom:8px}.statsRow:last-child{border-bottom:none;padding-bottom:0}.log{max-height:220px;overflow:auto;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;font-size:.92rem;color:var(--muted)}@media(max-width:1180px){.grid2,.viewer,.metrics{grid-template-columns:1fr}}@media(max-width:760px){main{padding:14px}.fieldgrid{grid-template-columns:1fr}.top{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <main>
+    <section class="top">
+      <div>
+        <h1 data-i18n="title">简化自动跟踪版</h1>
+        <p data-i18n="intro">这一版已经移除了 ROI 和目标模板框选逻辑，改回更简单的自动移动物体跟踪思路，主要目的就是先验证网站能否稳定运行，以及视频处理进度条能否正常移动。 [file:268]</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button id="langToggle" class="btn theme" type="button">English</button>
+        <button id="themeToggle" class="btn theme" type="button">Dark mode</button>
+      </div>
+    </section>
+
+    <section class="card grid2">
+      <div class="card" style="padding:0;border:none;background:transparent;">
+        <h2 style="margin:0" data-i18n="panel_ops">视频与操作</h2>
+        <div class="toolbar">
+          <label class="filebtn" for="videoInput" data-i18n="choose_video">选择视频</label>
+          <input class="file-input" id="videoInput" type="file" accept="video/*" />
+          <button id="playBtn" class="btn btn-secondary" type="button" data-i18n="play">播放</button>
+          <button id="pauseBtn" class="btn btn-secondary" type="button" data-i18n="pause">暂停</button>
+          <button id="captureBtn" class="btn btn-secondary" type="button" data-i18n="capture" data-tooltip="截取当前视频画面作为后续框选和分析参考。">捕获当前帧</button>
+          <button id="roiBtn" class="btn btn-secondary" type="button" data-tooltip="在原始视频画面上拖拽一个矩形，只分析这个区域里的目标。">框选 ROI</button>
+          <button id="clearRoiBtn" class="btn btn-secondary" type="button" data-tooltip="删除当前 ROI 框，恢复整幅画面的分析。">清除 ROI</button>
+          <button id="analyzeBtn" class="btn btn-primary" type="button" data-i18n="analyze">开始分析</button>
+          <button id="csvBtn" class="btn btn-secondary" type="button" data-i18n="download_csv" data-tooltip="导出轨迹坐标 CSV 文件，可用于后续统计和作图。">下载 CSV</button>
+          <button id="pngBtn" class="btn btn-secondary" type="button" data-i18n="download_heatmap">下载热力图</button>
+        </div>
+        <div id="statusText" class="status" data-i18n="status_wait">等待选择视频。</div>
+        <div id="fileInfo" class="small" data-i18n="file_wait">尚未选择文件。</div>
+        <div id="debugInfo" class="small" data-i18n="debug_wait">调试信息会显示在这里。</div>
+        <div class="progresswrap">
+          <div class="progresshead"><span data-i18n="file_prep">文件准备进度</span><strong id="uploadPercent">0%</strong></div>
+          <div class="progress"><span id="uploadBar"></span></div>
+          <div id="uploadHint" class="small" data-i18n="upload_wait">等待选择文件。</div>
+        </div>
+        <div class="progresswrap">
+          <div class="progresshead"><span data-i18n="video_proc">视频处理进度</span><strong id="processPercent">0%</strong></div>
+          <div class="progress"><span id="processBar"></span></div>
+          <div id="processHint" class="small" data-i18n="process_wait">等待开始分析。</div>
+        </div>
+      </div>
+      <div class="card" style="padding:0;border:none;background:transparent;">
+        <h2 style="margin:0" data-i18n="panel_params">处理参数</h2>
+        <div class="fieldgrid">
+          <div class="field"><div class="label-row"><label for="sampleStep" data-i18n="label_frame_step">Frame step</label><span class="help-tip" data-tooltip="控制每隔多少帧取样一次。数值越小，分析越细，但处理更慢；数值越大，分析更快，但可能丢失细小运动变化。" data-tooltip-key="tooltip_frame_step">?</span></div><input id="sampleStep" type="number" min="1" max="20" value="5"></div>
+          <div class="field"><div class="label-row"><label for="threshold" data-i18n="label_motion_threshold">Motion threshold</label><span class="help-tip" data-tooltip="控制前后帧差异多大才算运动。调低更敏感，容易把噪声也当成运动；调高更严格，可能漏掉较弱移动。" data-tooltip-key="tooltip_motion_threshold">?</span></div><input id="threshold" type="range" min="5" max="80" value="24"></div>
+          <div class="field"><div class="label-row"><label for="minArea" data-i18n="label_min_area">Min area</label><span class="help-tip" data-tooltip="控制最小目标面积。调小更容易识别小目标和尾巴，但也更容易引入噪点；调大可过滤杂点，但可能漏检小范围活动。" data-tooltip-key="tooltip_min_area">?</span></div><input id="minArea" type="number" min="10" max="5000" value="180"></div>
+          <div class="field"><div class="label-row"><label for="contrast" data-i18n="label_contrast">Contrast</label><span class="help-tip" data-tooltip="调整处理画面的对比度。提高后目标与背景差异更明显，但过高可能放大噪声。" data-tooltip-key="tooltip_contrast">?</span></div><input id="contrast" type="range" min="80" max="220" value="140"></div>
+          <div class="field"><div class="label-row"><label for="brightness" data-i18n="label_brightness">Brightness</label><span class="help-tip" data-tooltip="调整处理画面的亮度。适合修正视频偏暗或偏亮的情况，但过度调整会影响目标分离效果。" data-tooltip-key="tooltip_brightness">?</span></div><input id="brightness" type="range" min="60" max="180" value="95"></div>
+          <div class="field"><div class="label-row"><label for="gridBins" data-i18n="label_heatmap_bins">Heatmap bins</label><span class="help-tip" data-tooltip="控制热力图网格分辨率。数值越大，热点更细致；数值越小，热力图更平滑但细节更少。" data-tooltip-key="tooltip_heatmap_bins">?</span></div><input id="gridBins" type="number" min="30" max="180" value="80"></div>
+          <div class="field"><div class="label-row"><label for="sigma" data-i18n="label_gaussian_sigma">Gaussian sigma</label><span class="help-tip" data-tooltip="控制热力图平滑强度。数值越大，热点扩散更明显；数值越小，热点更集中、更锐利。" data-tooltip-key="tooltip_gaussian_sigma">?</span></div><input id="sigma" type="range" min="1" max="6" step="0.5" value="2.5"></div>
+          <div class="field"><div class="label-row"><label for="startTime" data-i18n="label_initial_capture">Initial capture time (s)</label><span class="help-tip" data-tooltip="设置首次自动截取视频画面的时间点，适合跳过开头黑屏或无效片段。" data-tooltip-key="tooltip_initial_capture">?</span></div><input id="startTime" type="number" min="0" max="5" step="0.05" value="0.10"></div>
+        </div>
+        <div class="small" data-i18n="param_note">这版不再要求先框选 ROI 或模板，上传视频后即可直接测试自动跟踪与进度条。 [file:268]</div>
+      </div>
+    </section>
+
+    <section class="metrics" style="grid-template-columns:repeat(2,minmax(0,1fr));">
+      <article class="metric"><span data-i18n="frames_sampled">Frames sampled</span><strong id="framesMetric">0</strong></article>
+      <article class="metric"><span data-i18n="track_points">Track points</span><strong id="pointsMetric">0</strong></article>
+    </section>
+
+    <section class="viewer">
+      <article class="card">
+        <h2 style="margin:0" data-i18n="raw_video">原始视频</h2>
+        <div class="stagewrap">
+          <div class="stage"><div class="canvasBox"><canvas id="rawCanvas" class="fitCanvas"></canvas></div></div>
+          <div id="videoSizeInfo" class="small" data-i18n="video_size_wait">等待视频尺寸信息。</div>
+        </div>
+      </article>
+      <article class="card">
+        <h2 style="margin:0" data-i18n="processed_view">处理画面</h2>
+        <div class="stagewrap">
+          <div class="stage"><div class="canvasBox"><canvas id="displayCanvas" class="fitCanvas"></canvas></div></div>
+          <div id="processSizeInfo" class="small" data-i18n="process_size_wait">处理结果会显示自动检测到的移动目标。</div>
+        </div>
+      </article>
+    </section>
+
+    <section class="grid2">
+      <article class="card">
+        <h2 style="margin:0" data-i18n="heatmap">平滑热力图</h2>
+        <div class="stagewrap">
+          <div class="stage"><div class="canvasBox"><canvas id="heatmapCanvas" class="fitCanvas"></canvas></div></div>
+          <div class="small" data-i18n="heatmap_note">热力图基于自动检测到的运动轨迹生成。</div>
+        </div>
+      </article>
+      <article class="card">
+        <h2 style="margin:0" data-i18n="stats_logs">区域统计与日志</h2>
+        <div class="statsBox">
+          <div class="statsRow"><span data-i18n="left_zone">Left zone</span><strong id="leftZone">0</strong></div>
+          <div class="statsRow"><span data-i18n="center_zone">Center zone</span><strong id="centerZone">0</strong></div>
+          <div class="statsRow"><span data-i18n="right_zone">Right zone</span><strong id="rightZone">0</strong></div>
+        </div>
+        <div id="eventLog" class="log"></div>
+      </article>
+    </section>
+  </main>
+
+  <video id="sourceVideo" hidden playsinline preload="metadata"></video>
+  <canvas id="captureCanvas" hidden></canvas>
+
+  <script>
+        const i18n={
+      zh:{title:'简化自动跟踪版',intro:'这一版已经移除了 ROI 和目标模板框选逻辑，改回更简单的自动移动物体跟踪思路，主要目的就是先验证网站能否稳定运行，以及视频处理进度条能否正常移动。',panel_ops:'视频与操作',choose_video:'选择视频',play:'播放',pause:'暂停',capture:'捕获当前帧',ROI_pick:'框选 ROI',ROI_clear:'清除 ROI',analyze:'开始分析',download_csv:'下载 CSV',tooltip_capture:'截取当前视频画面，作为后续框选 ROI 和分析的参考。',tooltip_ROI_pick:'在捕获视频当前帧数之后，在截取画面上拖拽矩形方框，分析时只会追踪方框内的目标。',tooltip_ROI_clear:'清除当前 ROI 框，恢复整幅画面的分析。',tooltip_csv:'导出轨迹坐标 CSV 文件，便于后续统计与作图。',download_heatmap:'下载热力图',status_wait:'等待选择视频。',file_wait:'尚未选择文件。',debug_wait:'调试信息会显示在这里。',file_prep:'文件准备进度',upload_wait:'等待选择文件。',video_proc:'视频处理进度',process_wait:'等待开始分析。',panel_params:'处理参数',param_note:'这版不再要求先框选 ROI 或模板，上传视频后即可直接测试自动跟踪与进度条。',frames_sampled:'已采样帧数',track_points:'轨迹点数',raw_video:'原始视频',video_size_wait:'等待视频尺寸信息。',processed_view:'处理画面',process_size_wait:'处理结果会显示自动检测到的移动目标。',heatmap:'平滑热力图',heatmap_note:'热力图基于自动检测到的运动轨迹生成。',stats_logs:'区域统计与日志',left_zone:'左侧区域',center_zone:'中间区域',right_zone:'右侧区域',theme_dark:'Dark mode',theme_light:'Light mode',lang_en:'English',lang_zh:'中文',status_selected:'视频文件已选中，正在加载。',status_capture:'当前帧已捕获。',status_playing:'视频正在播放。',status_paused:'视频已暂停。',status_start:'开始自动分析视频...',status_done:'分析完成，共提取 {n} 个追踪点。',status_need_video:'请先选择视频。',status_video_not_ready:'视频还没有成功加载。',status_meta_ok:'视频加载成功。可以直接开始分析。',status_auto_fail:'自动捕获首帧失败，可手动点击“捕获当前帧”。',status_play_fail:'播放失败，请先手动捕获当前帧。',status_end:'视频播放结束。',hint_processing:'已处理 {a}/{b} 帧，预计剩余 {t}',hint_done:'处理完成，可以导出 CSV 和热力图。',hint_init:'正在初始化处理...',detected_none:'未检测',debug_prefix:'调试信息：',file_ready:'视频已就绪：{w} × {h} px；时长 {d} 秒。',file_name:'文件名：{n}；大小：{s}；type：{t}',video_size:'原始视频尺寸：{w} × {h}',process_size:'处理画布尺寸：{w} × {h}（与原视频同比例）',canvas_prompt:'请先选择视频并捕获当前帧',label_frame_step:'帧步长',label_motion_threshold:'运动阈值',label_min_area:'最小面积',label_contrast:'对比度',label_brightness:'亮度',label_heatmap_bins:'热力图分箱数',label_gaussian_sigma:'高斯 sigma',label_initial_capture:'初始捕获时间（秒）',tooltip_frame_step:'控制每隔多少帧取样一次。数值越小，分析越细，但处理更慢；数值越大，分析更快，但可能丢失细小运动变化。',tooltip_motion_threshold:'控制前后帧差异多大才算运动。调低更敏感，容易把噪声也当成运动；调高更严格，可能漏掉较弱移动。',tooltip_min_area:'控制最小目标面积。调小更容易识别小目标和尾巴，但也更容易引入噪点；调大可过滤杂点，但可能漏检小范围活动。',tooltip_contrast:'调整处理画面的对比度。提高后目标与背景差异更明显，但过高可能放大噪声。',tooltip_brightness:'调整处理画面的亮度。适合修正视频偏暗或偏亮的情况，但过度调整会影响目标分离效果。',tooltip_heatmap_bins:'控制热力图网格分辨率。数值越大，热点更细致；数值越小，热力图更平滑但细节更少。',tooltip_gaussian_sigma:'控制热力图平滑强度。数值越大，热点扩散更明显；数值越小，热点更集中、更锐利。',tooltip_initial_capture:'设置首次自动截取视频画面的时间点，适合跳过开头黑屏或无效片段。'},
+      en:{title:'Simple Auto Tracking',intro:'This version removes ROI and template selection and goes back to a simpler automatic moving-object tracker, mainly to verify whether the site can run stably and whether the video processing progress bar can move normally.',panel_ops:'Video and Controls',choose_video:'Choose video',play:'Play',pause:'Pause',capture:'Capture frame',ROI_pick:'Pick ROI',ROI_clear:'Clear ROI',analyze:'Start analysis',download_csv:'Download CSV',tooltip_capture:'Capture the current video frame as the reference for ROI selection and analysis.',tooltip_ROI_pick:'Drag a rectangle on the raw video to limit analysis to that region only.',tooltip_ROI_clear:'Remove the current ROI and return to full-frame analysis.',tooltip_csv:'Export the trajectory coordinates as a CSV file for later statistics and plotting.',download_heatmap:'Download heatmap',status_wait:'Waiting for a video.',file_wait:'No file selected yet.',debug_wait:'Debug information will appear here.',file_prep:'File preparation progress',upload_wait:'Waiting for a file.',video_proc:'Video processing progress',process_wait:'Waiting to start analysis.',panel_params:'Processing Parameters',param_note:'This version no longer requires ROI or template selection. You can upload a video and directly test auto tracking and the progress bar.',frames_sampled:'Frames sampled',track_points:'Track points',raw_video:'Original video',video_size_wait:'Waiting for video size information.',processed_view:'Processed view',process_size_wait:'The processed view will show the automatically detected moving target.',heatmap:'Smoothed Heatmap',heatmap_note:'The heatmap is generated from automatically detected motion tracks.',stats_logs:'Stats and Logs',left_zone:'Left zone',center_zone:'Center zone',right_zone:'Right zone',theme_dark:'Dark mode',theme_light:'Light mode',lang_en:'English',lang_zh:'中文',status_selected:'Video file selected and loading.',status_capture:'Current frame captured.',status_roi_pick:'Drag on the raw video canvas to select ROI.',status_roi_ready:'ROI set. Analysis will run only inside the ROI.',status_roi_cleared:'ROI cleared. Full-frame analysis will be used.',status_playing:'Video is playing.',status_paused:'Video is paused.',status_start:'Starting automatic video analysis...',status_done:'Analysis finished with {n} track points.',status_need_video:'Please choose a video first.',status_video_not_ready:'The video is not ready yet.',status_meta_ok:'Video loaded successfully. You can start analysis now.',status_auto_fail:'Automatic first-frame capture failed. You can click Capture frame manually.',status_play_fail:'Play failed. Please capture a frame manually first.',status_end:'Video playback ended.',hint_processing:'Processed {a}/{b} frames, estimated {t} remaining',hint_done:'Processing complete. CSV and heatmap are ready to export.',hint_init:'Initializing processing...',detected_none:'Not detected',debug_prefix:'Debug:',file_ready:'Video ready: {w} × {h} px; duration {d} s.',file_name:'File: {n}; size: {s}; type: {t}',video_size:'Original video size: {w} × {h}',process_size:'Processing canvas size: {w} × {h} (same aspect ratio as source)',canvas_prompt:'Please choose a video and capture a frame first',label_frame_step:'Frame step',label_motion_threshold:'Motion threshold',label_min_area:'Min area',label_contrast:'Contrast',label_brightness:'Brightness',label_heatmap_bins:'Heatmap bins',label_gaussian_sigma:'Gaussian sigma',label_initial_capture:'Initial capture time (s)',tooltip_frame_step:'Controls how many frames are skipped between samples. Lower values give finer analysis but take longer; higher values run faster but may miss subtle motion.',tooltip_motion_threshold:'Controls how much frame-to-frame change counts as motion. Lower values are more sensitive but may include noise; higher values are stricter but may miss weak movement.',tooltip_min_area:'Sets the minimum target area. Lower values detect smaller targets and tails more easily but may introduce noise; higher values filter specks but may miss small activity.',tooltip_contrast:'Adjusts contrast in the processed view. Higher contrast can separate the target from the background better, but too much may amplify noise.',tooltip_brightness:'Adjusts brightness in the processed view. Useful when the video is too dark or too bright, but excessive adjustment can hurt target separation.',tooltip_heatmap_bins:'Controls the heatmap grid resolution. Higher values give finer hotspots; lower values produce a smoother but less detailed map.',tooltip_gaussian_sigma:'Controls heatmap smoothing strength. Higher values spread hotspots more; lower values keep hotspots tighter and sharper.',tooltip_initial_capture:'Sets the time point for the first automatic frame capture, which is useful for skipping black screens or invalid opening frames.'}
+    };
+    const html=document.documentElement;
+    const els={langToggle:document.getElementById('langToggle'),themeToggle:document.getElementById('themeToggle'),videoInput:document.getElementById('videoInput'),playBtn:document.getElementById('playBtn'),pauseBtn:document.getElementById('pauseBtn'),captureBtn:document.getElementById('captureBtn'),roiBtn:document.getElementById('roiBtn'),clearRoiBtn:document.getElementById('clearRoiBtn'),analyzeBtn:document.getElementById('analyzeBtn'),csvBtn:document.getElementById('csvBtn'),pngBtn:document.getElementById('pngBtn'),sourceVideo:document.getElementById('sourceVideo'),rawCanvas:document.getElementById('rawCanvas'),displayCanvas:document.getElementById('displayCanvas'),heatmapCanvas:document.getElementById('heatmapCanvas'),captureCanvas:document.getElementById('captureCanvas'),statusText:document.getElementById('statusText'),fileInfo:document.getElementById('fileInfo'),debugInfo:document.getElementById('debugInfo'),uploadPercent:document.getElementById('uploadPercent'),uploadBar:document.getElementById('uploadBar'),uploadHint:document.getElementById('uploadHint'),processPercent:document.getElementById('processPercent'),processBar:document.getElementById('processBar'),processHint:document.getElementById('processHint'),eventLog:document.getElementById('eventLog'),framesMetric:document.getElementById('framesMetric'),pointsMetric:document.getElementById('pointsMetric'),leftZone:document.getElementById('leftZone'),centerZone:document.getElementById('centerZone'),rightZone:document.getElementById('rightZone'),sampleStep:document.getElementById('sampleStep'),threshold:document.getElementById('threshold'),minArea:document.getElementById('minArea'),contrast:document.getElementById('contrast'),brightness:document.getElementById('brightness'),gridBins:document.getElementById('gridBins'),sigma:document.getElementById('sigma'),startTime:document.getElementById('startTime'),videoSizeInfo:document.getElementById('videoSizeInfo'),processSizeInfo:document.getElementById('processSizeInfo')};
+    const rawCtx=els.rawCanvas.getContext('2d',{willReadFrequently:true});
+    const displayCtx=els.displayCanvas.getContext('2d',{willReadFrequently:true});
+    const heatCtx=els.heatmapCanvas.getContext('2d');
+    const captureCtx=els.captureCanvas.getContext('2d',{willReadFrequently:true});
+    let lang='zh'; let currentObjectUrl=''; let tracks=[]; let csvText='time_sec,x,y\n'; let baseWidth=960,baseHeight=540; let capturedFrameGray=null; let previousPreviewGray=null; let playTimer=null; let detectedBox=null; let stablePoint=null; let roiRect=null; let roiDraft=null; let roiSelecting=false; let roiStart=null;
+    const t=(k,v={})=>{let s=((i18n[lang]&&i18n[lang][k])!==undefined)?i18n[lang][k]:k;for(const [a,b] of Object.entries(v))s=s.replace(`{${a}}`,b);return s};
+    function applyLanguage(){document.documentElement.lang=lang==='zh'?'zh-CN':'en';document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n)});els.langToggle.textContent=lang==='zh'?t('lang_en'):t('lang_zh');els.themeToggle.textContent=html.getAttribute('data-theme')==='dark'?t('theme_light'):t('theme_dark');if(els.roiBtn){els.roiBtn.textContent=t('ROI_pick');els.roiBtn.setAttribute('data-tooltip',t('tooltip_ROI_pick'));}if(els.clearRoiBtn){els.clearRoiBtn.textContent=t('ROI_clear');els.clearRoiBtn.setAttribute('data-tooltip',t('tooltip_ROI_clear'));}if(els.captureBtn)els.captureBtn.setAttribute('data-tooltip',t('tooltip_capture'));if(els.csvBtn)els.csvBtn.setAttribute('data-tooltip',t('tooltip_csv'));document.querySelectorAll('.help-tip[data-tooltip-key]').forEach(el=>el.setAttribute('data-tooltip',t(el.dataset.tooltipKey)));if(!capturedFrameGray)drawRawCanvas()}
+    function log(m){const ts=new Date().toLocaleTimeString();els.eventLog.innerHTML=`[${ts}] ${m}<br>`+els.eventLog.innerHTML}
+    function setStatus(txt,key=''){els.statusText.textContent=txt;els.statusText.className=`status${key?' '+key:''}`}
+    function setUploadProgress(p,h){els.uploadBar.style.width=`${p}%`;els.uploadPercent.textContent=`${Math.round(p)}%`;if(h)els.uploadHint.textContent=h}
+    function setProcessProgress(p,h){els.processBar.style.width=`${p}%`;els.processPercent.textContent=`${Math.round(p)}%`;if(h)els.processHint.textContent=h}
+    function formatBytes(bytes){if(bytes<1024)return `${bytes} B`;const u=['KB','MB','GB'];let v=bytes/1024,i=0;while(v>=1024&&i<u.length-1){v/=1024;i++}return `${v.toFixed(2)} ${u[i]}`}
+    function formatSeconds(v){if(!isFinite(v)||v<0)return lang==='zh'?'计算中':'calculating';const m=Math.floor(v/60),s=Math.floor(v%60);return lang==='zh'?(m>0?`${m}分${s}秒`:`${s}秒`):(m>0?`${m}m ${s}s`:`${s}s`)}
+    function downloadBlob(name,blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}
+    function syncTheme(){els.themeToggle.textContent=html.getAttribute('data-theme')==='dark'?t('theme_light'):t('theme_dark');drawRawCanvas();drawHeatmap(tracks)}
+    function setCanvasSize(w,h){baseWidth=w;baseHeight=h;[els.rawCanvas,els.displayCanvas,els.heatmapCanvas,els.captureCanvas].forEach(c=>{c.width=w;c.height=h;c.style.aspectRatio=`${w} / ${h}`});els.videoSizeInfo.textContent=t('video_size',{w,h});els.processSizeInfo.textContent=t('process_size',{w,h});drawRawCanvas()}
+    function normalizeRect(x0,y0,x1,y1){const x=Math.max(0,Math.min(x0,x1)),y=Math.max(0,Math.min(y0,y1));return{x,y,w:Math.abs(x1-x0),h:Math.abs(y1-y0)}}
+    function clampRect(rect){if(!rect)return null;const x=Math.max(0,Math.min(baseWidth-1,rect.x)),y=Math.max(0,Math.min(baseHeight-1,rect.y)),x2=Math.max(x+1,Math.min(baseWidth,rect.x+rect.w)),y2=Math.max(y+1,Math.min(baseHeight,rect.y+rect.h));return{x,y,w:x2-x,h:y2-y}}
+    function getActiveROI(){return clampRect(roiDraft||roiRect)}
+    function drawRoiOverlay(ctx){const roi=getActiveROI();if(!roi)return;ctx.save();ctx.strokeStyle='#f0b35a';ctx.lineWidth=2;ctx.setLineDash([8,6]);ctx.strokeRect(roi.x,roi.y,roi.w,roi.h);ctx.restore()}
+    function getCanvasPoint(evt,canvas){const rect=canvas.getBoundingClientRect();const sx=canvas.width/Math.max(rect.width,1),sy=canvas.height/Math.max(rect.height,1);return{x:(evt.clientX-rect.left)*sx,y:(evt.clientY-rect.top)*sy}}
+    function bindRoiSelection(){const canvas=els.rawCanvas;canvas.addEventListener('pointerdown',e=>{if(!roiSelecting)return;const p=getCanvasPoint(e,canvas);roiStart=p;roiDraft={x:p.x,y:p.y,w:1,h:1};drawRawCanvas()});canvas.addEventListener('pointermove',e=>{if(!roiSelecting||!roiStart)return;const p=getCanvasPoint(e,canvas);roiDraft=normalizeRect(roiStart.x,roiStart.y,p.x,p.y);drawRawCanvas()});const finish=()=>{if(!roiSelecting)return;if(roiDraft&&roiDraft.w>=20&&roiDraft.h>=20){roiRect=clampRect(roiDraft);setStatus(t('status_roi_ready'),'success')}roiDraft=null;roiStart=null;roiSelecting=false;drawRawCanvas()};canvas.addEventListener('pointerup',finish);canvas.addEventListener('pointerleave',()=>{if(roiSelecting&&roiDraft)drawRawCanvas()})}
+    function roiBounds(){const roi=clampRect(roiRect);if(!roi)return{x0:1,y0:1,x1:baseWidth-1,y1:baseHeight-1};return{x0:Math.max(1,Math.floor(roi.x)),y0:Math.max(1,Math.floor(roi.y)),x1:Math.min(baseWidth-1,Math.ceil(roi.x+roi.w)),y1:Math.min(baseHeight-1,Math.ceil(roi.y+roi.h))}}
+    function grayToImageData(gray,w,h,ctx){const img=ctx.createImageData(w,h);for(let i=0;i<gray.length;i++){const v=gray[i],idx=i*4;img.data[idx]=v;img.data[idx+1]=v;img.data[idx+2]=v;img.data[idx+3]=255}return img}
+    function drawRawCanvas(){rawCtx.clearRect(0,0,baseWidth,baseHeight);if(capturedFrameGray){rawCtx.putImageData(grayToImageData(capturedFrameGray,baseWidth,baseHeight,rawCtx),0,0);if(detectedBox){rawCtx.strokeStyle='rgba(255,180,84,0.95)';rawCtx.lineWidth=3;rawCtx.strokeRect(detectedBox.x,detectedBox.y,detectedBox.w,detectedBox.h)}drawRoiOverlay(rawCtx)}else{rawCtx.fillStyle='#10171f';rawCtx.fillRect(0,0,baseWidth,baseHeight);rawCtx.fillStyle='#d6e4e8';rawCtx.textAlign='center';rawCtx.font='600 24px Arial';rawCtx.fillText(t('canvas_prompt'),baseWidth/2,baseHeight/2)}}
+    function preprocessGray(imageData,w,h){const data=imageData.data;const contrast=Number(els.contrast.value)/100;const brightness=Number(els.brightness.value)/100;const gray=new Uint8ClampedArray(w*h);for(let i=0,p=0;i<data.length;i+=4,p++){let g=data[i]*0.299+data[i+1]*0.587+data[i+2]*0.114;g=((g-128)*contrast)+128;g*=brightness;gray[p]=Math.max(0,Math.min(255,g))}return gray}
+    function wait(ms){return new Promise(r=>setTimeout(r,ms))}
+    async function waitSeek(video,time){const target=Math.min(time,Math.max(0,video.duration-0.02));if(Math.abs(video.currentTime-target)<0.02)return;await new Promise(resolve=>{let done=false;const finish=()=>{if(done)return;done=true;video.removeEventListener('seeked',onSeeked);resolve()};const onSeeked=()=>finish();video.addEventListener('seeked',onSeeked,{once:true});video.currentTime=target;setTimeout(finish,120)})}
+    async function captureCurrentFrame(){const video=els.sourceVideo;if(!video.videoWidth){setStatus(t('status_video_not_ready'),'error');return false}try{if(video.readyState<2){await new Promise(r=>video.addEventListener('loadeddata',r,{once:true}))}captureCtx.drawImage(video,0,0,baseWidth,baseHeight);const img=captureCtx.getImageData(0,0,baseWidth,baseHeight);capturedFrameGray=preprocessGray(img,baseWidth,baseHeight);drawRawCanvas();setStatus(t('status_capture'),'success');els.debugInfo.textContent=`${t('debug_prefix')} currentTime=${video.currentTime.toFixed(3)}; readyState=${video.readyState}; paused=${video.paused}`;return true}catch(e){els.debugInfo.textContent=`${t('debug_prefix')} capture failed: ${e.message}`;setStatus(t('status_video_not_ready'),'error');return false}}
+    function detectMotionBox(currentGray,previousGray,w,h){if(!previousGray)return null;const threshold=Number(els.threshold.value);const minArea=Number(els.minArea.value);const b=roiBounds();let minX=w,minY=h,maxX=-1,maxY=-1,count=0,sumX=0,sumY=0;for(let y=b.y0;y<b.y1;y++){const row=y*w;for(let x=b.x0;x<b.x1;x++){const idx=row+x;const d=Math.abs(currentGray[idx]-previousGray[idx]);if(d>threshold){count++;sumX+=x;sumY+=y;if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<minY)minY=y;if(y>maxY)maxY=y}}}if(count<minArea||maxX<0||maxY<0)return null;return{x:minX,y:minY,w:Math.max(1,maxX-minX),h:Math.max(1,maxY-minY),cx:sumX/count,cy:sumY/count,area:count}}
+    function detectDarkTarget(gray,w,h,prevPoint,motionBox){const step=3,rb=roiBounds(),marginX=rb.x0,marginY=rb.y0,maxXBound=rb.x1,maxYBound=rb.y1;let gSum=0,gCount=0;for(let y=marginY;y<maxYBound;y+=6){for(let x=marginX;x<maxXBound;x+=6){gSum+=gray[y*w+x];gCount++}}const globalMean=gSum/Math.max(gCount,1),baseThreshold=Math.max(24,Math.min(110,globalMean-55));const regions=[];if(prevPoint){const r=Math.max(90,Math.min(w,h)*0.18);regions.push({x:Math.max(marginX,Math.floor(prevPoint.x-r)),y:Math.max(marginY,Math.floor(prevPoint.y-r)),w:Math.min(maxXBound,Math.ceil(prevPoint.x+r))-Math.max(marginX,Math.floor(prevPoint.x-r)),h:Math.min(maxYBound,Math.ceil(prevPoint.y+r))-Math.max(marginY,Math.floor(prevPoint.y-r))})}if(motionBox){const pad=Math.max(30,Math.max(motionBox.w,motionBox.h)*0.35),x0=Math.max(marginX,Math.floor(motionBox.x-pad)),y0=Math.max(marginY,Math.floor(motionBox.y-pad)),x1=Math.min(maxXBound,Math.ceil(motionBox.x+motionBox.w+pad)),y1=Math.min(maxYBound,Math.ceil(motionBox.y+motionBox.h+pad));regions.push({x:x0,y:y0,w:Math.max(step,x1-x0),h:Math.max(step,y1-y0)})}regions.push({x:marginX,y:marginY,w:Math.max(step,maxXBound-marginX),h:Math.max(step,maxYBound-marginY)});for(const region of regions){if(region.w<step||region.h<step)continue;let localSum=0,localCount=0;for(let y=region.y;y<region.y+region.h;y+=6){for(let x=region.x;x<region.x+region.w;x+=6){localSum+=gray[y*w+x];localCount++}}const localMean=localSum/Math.max(localCount,1),threshold=Math.max(20,Math.min(baseThreshold,localMean-35)),cols=Math.max(1,Math.floor(region.w/step)),rows=Math.max(1,Math.floor(region.h/step)),visited=new Uint8Array(cols*rows);let best=null,bestScore=-1;for(let cy=0;cy<rows;cy++){for(let cx=0;cx<cols;cx++){const start=cy*cols+cx;if(visited[start])continue;visited[start]=1;const px=region.x+cx*step,py=region.y+cy*step;if(gray[py*w+px]>threshold)continue;const stack=[start];let area=0,weightSum=0,sx=0,sy=0,minX=w,minY=h,maxX=-1,maxY=-1;while(stack.length){const id=stack.pop(),qx=id%cols,qy=(id/cols)|0,x=region.x+qx*step,y=region.y+qy*step,val=gray[y*w+x];if(val>threshold)continue;const weight=threshold-val+1;area++;weightSum+=weight;sx+=x*weight;sy+=y*weight;if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<minY)minY=y;if(y>maxY)maxY=y;for(let ny=Math.max(0,qy-1);ny<=Math.min(rows-1,qy+1);ny++){for(let nx=Math.max(0,qx-1);nx<=Math.min(cols-1,qx+1);nx++){const nid=ny*cols+nx;if(visited[nid])continue;visited[nid]=1;const tx=region.x+nx*step,ty=region.y+ny*step;if(gray[ty*w+tx]<=threshold)stack.push(nid)}}}const areaPx=area*step*step;if(areaPx<Math.max(60,Number(els.minArea.value)*0.15)||weightSum<=0||maxX<0||maxY<0)continue;if(areaPx>region.w*region.h*0.55)continue;const cx0=sx/weightSum,cy0=sy/weightSum,box={x:minX,y:minY,w:Math.max(step,maxX-minX+step),h:Math.max(step,maxY-minY+step)};let score=areaPx;if(prevPoint){const d=Math.hypot(cx0-prevPoint.x,cy0-prevPoint.y);score+=Math.max(0,220-d)*8}if(motionBox){const mcx=motionBox.cx!=null?motionBox.cx:motionBox.x+motionBox.w/2,mcy=motionBox.cy!=null?motionBox.cy:motionBox.y+motionBox.h/2,d=Math.hypot(cx0-mcx,cy0-mcy);score+=Math.max(0,180-d)*5}if(box.w>box.h*4||box.h>box.w*4)score*=0.65;if(cy0>maxYBound-10||cy0<marginY+10||cx0<marginX+10||cx0>maxXBound-10)score*=0.5;if(score>bestScore){bestScore=score;best={x:cx0,y:cy0,box,area:areaPx}}}}if(best)return best}return null}
+    function stabilizePoint(candidate,prevPoint,box){if(!candidate||!Number.isFinite(candidate.x)||!Number.isFinite(candidate.y))return prevPoint||null;let point={x:candidate.x,y:candidate.y};if(prevPoint){const dx=point.x-prevPoint.x,dy=point.y-prevPoint.y,dist=Math.hypot(dx,dy),maxStep=Math.max(18,Math.min(70,box?Math.max(box.w,box.h)*0.75:48));if(dist>maxStep&&dist>0){const k=maxStep/dist;point={x:prevPoint.x+dx*k,y:prevPoint.y+dy*k}}point={x:prevPoint.x*0.35+point.x*0.65,y:prevPoint.y*0.35+point.y*0.65}}return Number.isFinite(point.x)&&Number.isFinite(point.y)?point:(prevPoint||null)}
+    function refineStablePoint(gray,box,w,h,prevPoint){const dark=detectDarkTarget(gray,w,h,prevPoint,box);if(dark)return stabilizePoint({x:dark.x,y:dark.y},prevPoint,dark.box);if(box){return stabilizePoint({x:box.cx!=null?box.cx:box.x+box.w/2,y:box.cy!=null?box.cy:box.y+box.h/2},prevPoint,box)}return prevPoint||null}
+    function drawDetection(gray,box,point){displayCtx.putImageData(grayToImageData(gray,baseWidth,baseHeight,displayCtx),0,0);if(box){displayCtx.strokeStyle='#ffb454';displayCtx.lineWidth=3;displayCtx.strokeRect(box.x,box.y,box.w,box.h)}if(tracks.length>1){displayCtx.strokeStyle='#57a7bb';displayCtx.lineWidth=Math.max(2,baseWidth/420);displayCtx.beginPath();tracks.forEach((p,i)=>{if(i===0)displayCtx.moveTo(p.x,p.y);else displayCtx.lineTo(p.x,p.y)});displayCtx.stroke()}if(point&&Number.isFinite(point.x)&&Number.isFinite(point.y)){displayCtx.strokeStyle='#00ff88';displayCtx.lineWidth=3;displayCtx.beginPath();displayCtx.arc(point.x,point.y,Math.max(7,baseWidth/95),0,Math.PI*2);displayCtx.stroke()}drawRoiOverlay(displayCtx)}
+    function gaussianKernel(radius,sigma){const size=radius*2+1,k=Array.from({length:size},()=>Array(size).fill(0));let sum=0;for(let y=-radius;y<=radius;y++){for(let x=-radius;x<=radius;x++){const v=Math.exp(-(x*x+y*y)/(2*sigma*sigma));k[y+radius][x+radius]=v;sum+=v}}for(let y=0;y<size;y++)for(let x=0;x<size;x++)k[y][x]/=sum;return k}
+    function conv2Same(m,k){const rows=m.length,cols=m[0].length,kr=k.length,kc=k[0].length,ry=Math.floor(kr/2),rx=Math.floor(kc/2);const out=Array.from({length:rows},()=>Array(cols).fill(0));for(let y=0;y<rows;y++){for(let x=0;x<cols;x++){let sum=0;for(let ky=0;ky<kr;ky++){for(let kx=0;kx<kc;kx++){const iy=y+ky-ry,ix=x+kx-rx;if(iy>=0&&iy<rows&&ix>=0&&ix<cols)sum+=m[iy][ix]*k[ky][kx]}}out[y][x]=sum}}return out}
+    function bilinearSample(m,x,y){const rows=m.length,cols=m[0].length;const x0=Math.floor(x),y0=Math.floor(y),x1=Math.min(cols-1,x0+1),y1=Math.min(rows-1,y0+1);const dx=x-x0,dy=y-y0;const q11=m[y0][x0],q21=m[y0][x1],q12=m[y1][x0],q22=m[y1][x1];return q11*(1-dx)*(1-dy)+q21*dx*(1-dy)+q12*(1-dx)*dy+q22*dx*dy}
+    function jet(t){const c=v=>Math.max(0,Math.min(1,v));return[Math.round(c(1.5-Math.abs(4*t-3))*255),Math.round(c(1.5-Math.abs(4*t-2))*255),Math.round(c(1.5-Math.abs(4*t-1))*255)]}
+    function drawHeatmap(points){const w=els.heatmapCanvas.width||baseWidth,h=els.heatmapCanvas.height||baseHeight;heatCtx.clearRect(0,0,w,h);heatCtx.fillStyle=html.getAttribute('data-theme')==='dark'?'#0f2630':'#e5f0f2';heatCtx.fillRect(0,0,w,h);if(!points.length)return;const bins=Math.max(30,Number(els.gridBins.value)),cols=bins,rows=Math.max(30,Math.round(bins*(h/w)));const grid=Array.from({length:rows},()=>Array(cols).fill(0));for(const p of points){const px=p.x/w,py=p.y/h;const cx=Math.max(0,Math.min(cols-1,Math.floor(px*cols))),cy=Math.max(0,Math.min(rows-1,Math.floor(py*rows)));grid[cy][cx]+=1}const sigma=Number(els.sigma.value),radius=Math.max(2,Math.ceil(sigma*2.5)),smooth=conv2Same(grid,gaussianKernel(radius,sigma));let maxVal=0;for(let y=0;y<rows;y++)for(let x=0;x<cols;x++)if(smooth[y][x]>maxVal)maxVal=smooth[y][x];maxVal=Math.max(maxVal,1e-9);const img=heatCtx.createImageData(w,h);for(let py=0;py<h;py++){for(let px=0;px<w;px++){const idx=(py*w+px)*4,gx=Math.max(0,Math.min(cols-1,(px/(w-1||1))*(cols-1))),gy=Math.max(0,Math.min(rows-1,(py/(h-1||1))*(rows-1))),v=bilinearSample(smooth,gx,gy)/maxVal,s=Math.pow(Math.max(0,Math.min(1,v)),0.75),rgb=jet(s);img.data[idx]=rgb[0];img.data[idx+1]=rgb[1];img.data[idx+2]=rgb[2];img.data[idx+3]=Math.round(Math.max(18,s*245))}}heatCtx.putImageData(img,0,0)}
+    function updateMetrics(points){els.framesMetric.textContent=points.length;els.pointsMetric.textContent=points.length;let left=0,center=0,right=0;for(const p of points){const rel=p.x/baseWidth;if(rel<1/3)left++;else if(rel>2/3)right++;else center++}els.leftZone.textContent=left;els.centerZone.textContent=center;els.rightZone.textContent=right}
+    async function loadSelectedFile(file){if(!file)return;if(currentObjectUrl)URL.revokeObjectURL(currentObjectUrl);currentObjectUrl=URL.createObjectURL(file);tracks=[];csvText='time_sec,x,y\n';capturedFrameGray=null;previousPreviewGray=null;detectedBox=null;stablePoint=null;roiDraft=null;roiSelecting=false;els.sourceVideo.src=currentObjectUrl;setUploadProgress(50,t('upload_wait'));setProcessProgress(0,t('process_wait'));els.fileInfo.textContent=t('file_name',{n:file.name,s:formatBytes(file.size),t:file.type||'unknown'});setStatus(t('status_selected'),'warn');log(`${file.name}`)}
+    function startPreview(){clearInterval(playTimer);playTimer=setInterval(async()=>{if(els.sourceVideo.paused||els.sourceVideo.ended)return;await captureCurrentFrame()},150)}
+    function stopPreview(){clearInterval(playTimer);playTimer=null}
+    const nextFrame=()=>new Promise(r=>requestAnimationFrame(()=>r()));
+    const yieldToBrowser=async()=>{await new Promise(r=>setTimeout(r,0));await nextFrame()};
+    async function analyzeVideo(){
+      const video = els.sourceVideo;
+      if(!video.src){ setStatus(t('status_need_video'),'error'); return; }
+      if(!isFinite(video.duration) || video.duration <= 0){ setStatus(t('status_video_not_ready'),'error'); return; }
+      stopPreview();
+      video.pause();
+      setStatus(t('status_start'),'warn');
+      setProcessProgress(1,t('hint_init'));
+      await yieldToBrowser();
+      tracks = [];
+      csvText = 'time_sec,x,y\n';
+      stablePoint = null;
+      const w = baseWidth, h = baseHeight;
+      let previousGray = null;
+      const frameStep = Math.max(1, Number(els.sampleStep.value));
+      const fpsEstimate = Math.max(8, Math.round(30 / frameStep));
+      const sampleInterval = frameStep / fpsEstimate;
+      const totalFrames = Math.max(1, Math.floor(video.duration / sampleInterval));
+      const start = performance.now();
+      for(let index = 0; index < totalFrames; index++){
+        const tSec = index * sampleInterval;
+        await waitSeek(video, tSec);
+        captureCtx.drawImage(video, 0, 0, w, h);
+        const frame = captureCtx.getImageData(0, 0, w, h);
+        const gray = preprocessGray(frame, w, h);
+        capturedFrameGray = gray;
+        const motionBox = detectMotionBox(gray, previousGray, w, h);
+        const darkTarget = detectDarkTarget(gray, w, h, stablePoint, motionBox);
+        let point = stablePoint;
+        if(darkTarget){
+          detectedBox = darkTarget.box;
+          const candidate = stabilizePoint({x:darkTarget.x,y:darkTarget.y}, stablePoint, darkTarget.box);
+          if(candidate && Number.isFinite(candidate.x) && Number.isFinite(candidate.y)){
+            point = { x: candidate.x, y: candidate.y, time: tSec };
+            stablePoint = point;
+            tracks.push(point);
+            csvText += `${tSec.toFixed(3)},${point.x.toFixed(2)},${point.y.toFixed(2)}
+`;
+          }
+        }else if(motionBox){
+          detectedBox = motionBox;
+          const candidate = refineStablePoint(gray, motionBox, w, h, stablePoint);
+          if(candidate && Number.isFinite(candidate.x) && Number.isFinite(candidate.y)){
+            point = { x: candidate.x, y: candidate.y, time: tSec };
+            stablePoint = point;
+            tracks.push(point);
+            csvText += `${tSec.toFixed(3)},${point.x.toFixed(2)},${point.y.toFixed(2)}
+`;
+          }
+        }else{
+          detectedBox = null;
+        }
+        if(index === 0 || index % 4 === 0 || index === totalFrames - 1){
+          drawRawCanvas();
+          drawDetection(gray, detectedBox, point);
+          drawHeatmap(tracks);
+        }
+        const percent = Math.max(1, ((index + 1) / totalFrames) * 100);
+        const elapsed = (performance.now() - start) / 1000;
+        const remain = (elapsed / Math.max(index + 1, 1)) * (totalFrames - index - 1);
+        setProcessProgress(percent, t('hint_processing', { a: index + 1, b: totalFrames, t: formatSeconds(remain) }));
+        previousGray = gray;
+        if(index === 0 || index % 2 === 0) await yieldToBrowser();
+      }
+      updateMetrics(tracks);
+      drawRawCanvas();
+      drawHeatmap(tracks);
+      setStatus(t('status_done', { n: tracks.length }), 'success');
+      setProcessProgress(100, t('hint_done'));
+    }
+    els.videoInput.addEventListener('change',async e=>{const file=e.target.files&&e.target.files[0];if(file)await loadSelectedFile(file)});
+    els.playBtn.addEventListener('click',async()=>{try{await els.sourceVideo.play();startPreview();setStatus(t('status_playing'),'success')}catch(e){setStatus(t('status_play_fail'),'error')}});
+    els.pauseBtn.addEventListener('click',()=>{els.sourceVideo.pause();stopPreview();captureCurrentFrame();setStatus(t('status_paused'),'success')});
+    els.captureBtn.addEventListener('click',captureCurrentFrame);
+    if(els.roiBtn)els.roiBtn.addEventListener('click',()=>{roiSelecting=true;roiDraft=null;roiStart=null;setStatus(t('status_roi_pick'),'warn')});
+    if(els.clearRoiBtn)els.clearRoiBtn.addEventListener('click',()=>{roiRect=null;roiDraft=null;roiSelecting=false;roiStart=null;drawRawCanvas();if(capturedFrameGray){drawDetection(capturedFrameGray,detectedBox,stablePoint)}setStatus(t('status_roi_cleared'),'warn')});
+    els.analyzeBtn.addEventListener('click',analyzeVideo);
+    els.csvBtn.addEventListener('click',()=>downloadBlob('trajectory.csv',new Blob([csvText],{type:'text/csv'})));
+    els.pngBtn.addEventListener('click',()=>els.heatmapCanvas.toBlob(blob=>downloadBlob('heatmap.png',blob)));
+    els.themeToggle.addEventListener('click',()=>{const next=html.getAttribute('data-theme')==='dark'?'light':'dark';html.setAttribute('data-theme',next);syncTheme()});
+    els.langToggle.addEventListener('click',()=>{lang=lang==='zh'?'en':'zh';applyLanguage();updateMetrics(tracks);if(isFinite(els.sourceVideo.duration)&&els.sourceVideo.duration>0){els.videoSizeInfo.textContent=t('video_size',{w:baseWidth,h:baseHeight});els.processSizeInfo.textContent=t('process_size',{w:baseWidth,h:baseHeight})}});
+    els.sourceVideo.addEventListener('loadedmetadata',async()=>{const vw=els.sourceVideo.videoWidth||960,vh=els.sourceVideo.videoHeight||540;setCanvasSize(vw,vh);setUploadProgress(100,lang==='zh'?'视频元数据加载完成。':'Video metadata loaded.');els.fileInfo.textContent=t('file_ready',{w:vw,h:vh,d:els.sourceVideo.duration.toFixed(2)});try{await waitSeek(els.sourceVideo,Number(els.startTime.value));await captureCurrentFrame();previousPreviewGray=capturedFrameGray;setStatus(t('status_meta_ok'),'success')}catch(e){setStatus(t('status_auto_fail'),'warn')}els.debugInfo.textContent=`${t('debug_prefix')} loadedmetadata success; readyState=${els.sourceVideo.readyState}; currentTime=${els.sourceVideo.currentTime.toFixed(3)}`;log('metadata loaded')});
+    els.sourceVideo.addEventListener('ended',()=>{stopPreview();setStatus(t('status_end'),'success')});
+    els.sourceVideo.addEventListener('pause',()=>{stopPreview()});
+    html.setAttribute('data-theme',matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    setCanvasSize(baseWidth,baseHeight);bindRoiSelection();drawRawCanvas();drawHeatmap([]);applyLanguage();syncTheme();log('page initialized');
+  </script>
+</body>
+</html>
