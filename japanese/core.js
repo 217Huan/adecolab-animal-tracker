@@ -23,6 +23,7 @@
     }
     return null;
   }
+  function matchesVerbPractice(word,mode){return !!teForm(word)&&(mode!=='verbType'||word.kana.endsWith('る'));}
   class Session{
     constructor(words,random=Math.random,randomOrder=true){this.random=random;this.randomOrder=randomOrder;this.total=words.length;this.queue=randomOrder?shuffle(words,random):[...words];this.missed=[];this.index=0;this.round=1;this.mastered=0;}
     get done(){return this.queue.length===0;}
@@ -40,6 +41,6 @@
       if(this.index===this.queue.length){this.queue=this.randomOrder?shuffle(this.missed,this.random):[...this.missed];this.missed=[];this.index=0;if(this.queue.length)this.round++;}
     }
   }
-  const api={shuffle,selectWords,normalize,isCorrect,teForm,Session};
+  const api={shuffle,selectWords,normalize,isCorrect,teForm,matchesVerbPractice,Session};
   if(typeof module!=='undefined')module.exports=api;else root.JapaneseCore=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

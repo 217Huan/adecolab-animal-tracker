@@ -13,7 +13,7 @@
   let cardAnimations=[],outgoingCard=null,gesture=null,suppressClick=false;
   const folderButtons=[];
   const verbMode=()=>['te','verbType'].includes($('mode').value);
-  const selected=()=>selectWords(words,lesson,$('pos').value,$('subtype').value).filter(w=>(!verbMode()||JapaneseCore.teForm(w))&&(!$('only-favorites').checked||favorites.ids.has(w.id)));
+  const selected=()=>selectWords(words,lesson,verbMode()?'verb':$('pos').value,verbMode()?'all':$('subtype').value).filter(w=>(!verbMode()||JapaneseCore.matchesVerbPractice(w,$('mode').value))&&(!$('only-favorites').checked||favorites.ids.has(w.id)));
   const folderTitle=()=>lesson==='all'?t('allLessons'):`${t('lesson',{n:lesson})} · ${lessons[Number(lesson)-1]}`;
   function textCell(row,value,ja=false){const cell=document.createElement('td');cell.textContent=value;if(ja)cell.lang='ja';row.append(cell);return cell;}
   function favoriteButton(button,w,short=false){const saved=favorites.ids.has(w.id);button.textContent=short?(saved?'★':'☆'):t(saved?'saved':'save');button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',t(saved?'removeLabel':'saveLabel',{word:w.kana}));button.disabled=favorites.loading||favorites.saving||favorites.loadFailed;}
@@ -30,6 +30,7 @@
     clearCardMotion();
     session=null;feedbackKey='';$('exercise').hidden=true;$('complete').hidden=true;
     $('direction-wrap').hidden=$('mode').value!=='cards';
+    for(const id of ['pos','subtype'])$(id).closest('label').hidden=verbMode();
     paintList();paintStudy();
   }
   function updateTypes(reset=true){
