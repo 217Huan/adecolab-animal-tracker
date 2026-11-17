@@ -12,7 +12,8 @@
   let client=null,availability='notConfigured',accountMessage='',authBusy=false,recovery=false,authUserId=null,authGeneration=0;
   let cardAnimations=[],outgoingCard=null,gesture=null,suppressClick=false;
   const folderButtons=[];
-  const selected=()=>selectWords(words,lesson,$('pos').value,$('subtype').value).filter(w=>!$('only-favorites').checked||favorites.ids.has(w.id));
+  const verbMode=()=>['te','verbType'].includes($('mode').value);
+  const selected=()=>selectWords(words,lesson,$('pos').value,$('subtype').value).filter(w=>(!verbMode()||JapaneseCore.teForm(w))&&(!$('only-favorites').checked||favorites.ids.has(w.id)));
   const folderTitle=()=>lesson==='all'?t('allLessons'):`${t('lesson',{n:lesson})} · ${lessons[Number(lesson)-1]}`;
   function textCell(row,value,ja=false){const cell=document.createElement('td');cell.textContent=value;if(ja)cell.lang='ja';row.append(cell);return cell;}
   function favoriteButton(button,w,short=false){const saved=favorites.ids.has(w.id);button.textContent=short?(saved?'★':'☆'):t(saved?'saved':'save');button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',t(saved?'removeLabel':'saveLabel',{word:w.kana}));button.disabled=favorites.loading||favorites.saving||favorites.loadFailed;}
@@ -50,7 +51,7 @@
     $('progress').max=session?.total||1;$('progress').value=session?.mastered||0;
     if(!session)return;
     if(session.done){$('complete-text').textContent=t('completeText',{total:session.total,round:session.round});return;}
-    const w=session.current;$('word-meta').textContent=`${t('lesson',{n:w.lesson})} · ${typeName(w.type,lang)}`;
+    const w=session.current;$('word-meta').textContent=`${t('lesson',{n:w.lesson})} · ${activeMode==='verbType'?'':typeName(w.type,lang)}`;
     const frontJapanese=activeDirection==='japanese';
     for(const [prefix,isJapanese] of [['card',frontJapanese],['card-back',!frontJapanese]]){
       $(`${prefix}-label`).textContent=isJapanese?'日本語':'ENGLISH';$(`${prefix}-main`).textContent=isJapanese?w.kana:w.english;$(`${prefix}-main`).lang=isJapanese?'ja':'en';$(`${prefix}-reading`).textContent=isJapanese?w.romaji:'';
@@ -62,13 +63,17 @@
     $('prompt-label').textContent=t(activePrompt==='japanese'?'look':'fromEnglish');$('hide-word').textContent=t(hiddenPrompt?'show':'hide');
     $('spelling-word').textContent=activePrompt==='japanese'?(hiddenPrompt?'••••••':w.kana):w.english;$('spelling-word').lang=activePrompt==='japanese'?'ja':'en';$('spelling-meaning').textContent=activePrompt==='japanese'?w.english:'';
     $('feedback').textContent=feedbackKey?t(feedbackKey,{word:w.kana,reading:w.romaji,meaning:w.english}):'';
+    if(['te','verbType'].includes(activeMode)){
+      $('prompt-label').textContent=t(activeMode==='te'?'tePrompt':'typePrompt');$('spelling-word').textContent=w.kana;$('spelling-word').lang='ja';$('spelling-meaning').textContent=w.english;
+      if(feedbackKey==='verbReview')$('feedback').textContent=t('verbReview',{word:activeMode==='te'?JapaneseCore.teForm(w):typeName(w.type,lang)});
+    }
     favoriteButton($('favorite-word'),w);
   }
   function renderNewWord(){
     $('flashcard').classList.add('is-resetting');
     $('welcome').hidden=true;$('empty').hidden=true;$('complete').hidden=!session.done;$('exercise').hidden=session.done;
     flipped=false;checked=false;hiddenPrompt=false;feedbackKey='';
-    $('card-stage').hidden=activeMode!=='cards';$('card-navigation').hidden=activeMode!=='cards';$('card-actions').hidden=activeMode!=='cards';$('spelling').hidden=activeMode!=='spelling';
+    $('card-stage').hidden=activeMode!=='cards';$('card-navigation').hidden=activeMode!=='cards';$('card-actions').hidden=activeMode!=='cards';$('spelling').hidden=activeMode==='cards';$('answer-form').hidden=activeMode==='verbType';$('verb-choices').hidden=activeMode!=='verbType';document.querySelector('.input-note').hidden=activeMode==='verbType';document.querySelectorAll('[data-verb]').forEach(b=>{b.disabled=false;b.setAttribute('aria-pressed','false');});
     $('hide-word').hidden=activePrompt!=='japanese';$('answer').value='';$('answer').disabled=false;$('check').disabled=false;$('feedback').className='';$('next').hidden=true;
     paintStudy();void $('flashcard').offsetWidth;$('flashcard').classList.remove('is-resetting');
     if(session.done)$('again').focus({preventScroll:true});else if(activeMode==='cards')$('flashcard').focus({preventScroll:true});else if(activePrompt==='english')$('answer').focus({preventScroll:true});
@@ -105,7 +110,8 @@
   favorites.changed=()=>{paintList();paintStudy();paintAccount();};
   $('language').addEventListener('click',()=>{lang=lang==='zh'?'en':'zh';try{storage.setItem(languageKey,lang);}catch{}paintLanguage();});
   $('start').addEventListener('click',start);$('again').addEventListener('click',start);$('pos').addEventListener('change',()=>updateTypes());
-  ['subtype','mode','direction','order','only-favorites'].forEach(id=>$(id).addEventListener('change',resetSelection));
+  $('mode').addEventListener('change',()=>{if(verbMode()){$('pos').value='verb';$('subtype').value='all';updateTypes();}else resetSelection();});
+  ['subtype','direction','order','only-favorites'].forEach(id=>$(id).addEventListener('change',resetSelection));
   $('favorite-word').addEventListener('click',()=>{if(session&&!session.done)toggleFavorite(session.current.id);});
   $('flashcard').addEventListener('click',()=>{if(suppressClick){suppressClick=false;return;}if(session&&!session.done){flipped=!flipped;paintStudy();}});
   $('previous-card').addEventListener('click',()=>navigateCard(-1));$('next-card').addEventListener('click',()=>navigateCard(1));
@@ -119,10 +125,11 @@
   $('answer-form').addEventListener('submit',event=>{
     event.preventDefault();if(composing||!session||session.done||checked)return;
     if(!$('answer').value.trim()){feedbackKey='enterAnswer';paintStudy();$('answer').focus();return;}
-    checked=true;const correct=isCorrect(session.current,$('answer').value);feedbackKey=correct?'correct':'incorrect';$('feedback').className=correct?'correct':'incorrect';$('answer').disabled=true;$('check').disabled=true;$('next').hidden=false;$('next').dataset.correct=String(correct);paintStudy();$('next').focus({preventScroll:true});
+    checked=true;const correct=activeMode==='te'?JapaneseCore.normalize($('answer').value)===JapaneseCore.teForm(session.current):isCorrect(session.current,$('answer').value);feedbackKey=correct?'correct':activeMode==='te'?'verbReview':'incorrect';$('feedback').className=correct?'correct':'incorrect';$('answer').disabled=true;$('check').disabled=true;$('next').hidden=false;$('next').dataset.correct=String(correct);paintStudy();$('next').focus({preventScroll:true});
   });
   $('answer').addEventListener('compositionstart',()=>{composing=true;});$('answer').addEventListener('compositionend',()=>{setTimeout(()=>{composing=false;},0);});
   $('answer').addEventListener('keydown',event=>{if(event.key==='Enter'&&(event.isComposing||composing||event.keyCode===229))event.preventDefault();});
+  document.querySelectorAll('[data-verb]').forEach(button=>button.addEventListener('click',()=>{if(!session||session.done||checked)return;checked=true;const correct=button.dataset.verb===session.current.type;feedbackKey=correct?'correct':'verbReview';$('feedback').className=correct?'correct':'incorrect';document.querySelectorAll('[data-verb]').forEach(b=>{b.disabled=true;b.setAttribute('aria-pressed',String(b===button));});$('next').dataset.correct=String(correct);$('next').hidden=false;paintStudy();$('next').focus({preventScroll:true});}));
   $('next').addEventListener('click',()=>{if(checked)grade($('next').dataset.correct==='true');});
   async function syncUser(user,force=false){
     if(!force&&authUserId===(user?.id||null))return;authUserId=user?.id||null;const generation=++authGeneration;
