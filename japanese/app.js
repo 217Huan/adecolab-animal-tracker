@@ -1,0 +1,149 @@
+(()=>{
+  'use strict';
+  const {words,lessons}=JapaneseVocabulary,{Session,selectWords,isCorrect}=JapaneseCore;
+  const {t:translate,typeName}=JapaneseI18n,favoritesAPI=JapaneseFavorites;
+  const $=id=>document.getElementById(id),languageKey='adecolab.language';
+  let storage;try{storage=localStorage;}catch{storage={getItem:()=>null,setItem:()=>{throw Error('Storage unavailable');}};}
+  let lang;try{lang=storage.getItem(languageKey);}catch{}if(!['zh','en'].includes(lang))lang=navigator.language.toLowerCase().startsWith('zh')?'zh':'en';
+  const t=(key,values)=>translate(lang,key,values);
+  const favorites=new favoritesAPI.FavoriteStore(storage,words.map(w=>w.id));
+  let lesson='all',session=null,flipped=false,checked=false,hiddenPrompt=false,composing=false;
+  let activeMode='cards',activeDirection='english',activePrompt='japanese',feedbackKey='',favoriteMessage='';
+  let client=null,availability='notConfigured',accountMessage='',authBusy=false,recovery=false,authUserId=null,authGeneration=0;
+  const folderButtons=[];
+  const selected=()=>selectWords(words,lesson,$('pos').value,$('subtype').value).filter(w=>!$('only-favorites').checked||favorites.ids.has(w.id));
+  const folderTitle=()=>lesson==='all'?t('allLessons'):`${t('lesson',{n:lesson})} · ${lessons[Number(lesson)-1]}`;
+  function textCell(row,value,ja=false){const cell=document.createElement('td');cell.textContent=value;if(ja)cell.lang='ja';row.append(cell);return cell;}
+  function favoriteButton(button,w,short=false){const saved=favorites.ids.has(w.id);button.textContent=short?(saved?'★':'☆'):t(saved?'saved':'save');button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',t(saved?'removeLabel':'saveLabel',{word:w.written}));button.disabled=favorites.loading||favorites.saving||favorites.loadFailed;}
+  async function toggleFavorite(id){favoriteMessage='';try{await favorites.toggle(id);}catch{favoriteMessage='saveError';}$('favorite-message').textContent=favoriteMessage?t(favoriteMessage):'';}
+  function paintList(){
+    const list=selected();$('count').textContent=t('wordCount',{n:list.length});$('list-count').textContent=`(${list.length})`;
+    $('favorite-count').textContent=favorites.ids.size;$('start').disabled=!list.length||(favorites.loading&&$('only-favorites').checked)||favorites.loadFailed;
+    $('word-list').replaceChildren();const fragment=document.createDocumentFragment();
+    list.forEach(w=>{const row=document.createElement('tr');textCell(row,w.lesson);textCell(row,w.written,true);textCell(row,w.reading,true);textCell(row,w.english);textCell(row,typeName(w.type,lang));const cell=textCell(row,'');const button=document.createElement('button');button.type='button';favoriteButton(button,w,true);button.addEventListener('click',()=>toggleFavorite(w.id));cell.append(button);fragment.append(row);});$('word-list').append(fragment);
+    if(!session){$('welcome').hidden=!list.length;$('empty').hidden=!!list.length;}
+    if(session&&!session.done)favoriteButton($('favorite-word'),session.current);
+  }
+  function resetSelection(){
+    session=null;feedbackKey='';$('exercise').hidden=true;$('complete').hidden=true;
+    $('direction-wrap').hidden=$('mode').value!=='cards';$('prompt-wrap').hidden=$('mode').value!=='spelling';
+    paintList();paintStudy();
+  }
+  function updateTypes(reset=true){
+    const current=$('subtype').value,types=[...new Set(selectWords(words,lesson,$('pos').value).map(w=>w.type))];
+    $('subtype').replaceChildren(new Option(t('allCategories'),'all'),...types.map(type=>new Option(typeName(type,lang),type)));
+    if(types.includes(current))$('subtype').value=current;if(reset)resetSelection();
+  }
+  ['all',1,2,3,4,5,6,7,8].forEach(value=>{
+    const button=document.createElement('button');button.type='button';button.dataset.lesson=value;
+    const title=document.createElement('span'),sub=document.createElement('small');button.append(title,sub);folderButtons.push({value,button,title,sub});
+    button.addEventListener('click',()=>{lesson=value;paintFolders();updateTypes();});$('folders').append(button);
+  });
+  function paintFolders(){for(const {value,button,title,sub} of folderButtons){title.textContent=value==='all'?t('allLessons'):t('lesson',{n:value});sub.textContent=value==='all'?t('total',{n:words.length}):lessons[value-1];button.classList.toggle('active',lesson===value);button.setAttribute('aria-pressed',String(lesson===value));}}
+  function paintStudy(){
+    $('deck-title').textContent=folderTitle();$('settings-note').textContent=t(session?'running':'choose');
+    $('round').textContent=session?t('round',{n:session.round}):t('ready');
+    $('mastery').textContent=t('mastery',{n:session?.mastered||0,total:session?.total||selected().length});
+    $('position').textContent=!session?t('waiting'):session.done?t('done'):t('position',{n:session.index+1,total:session.queue.length,missed:session.missed.length});
+    $('progress').max=session?.total||1;$('progress').value=session?.mastered||0;
+    if(!session)return;
+    if(session.done){$('complete-text').textContent=t('completeText',{total:session.total,round:session.round});return;}
+    const w=session.current;$('word-meta').textContent=`${t('lesson',{n:w.lesson})} · ${typeName(w.type,lang)}`;
+    const showJapanese=(activeDirection==='japanese')!==flipped;
+    $('card-label').textContent=showJapanese?'日本語':'ENGLISH';$('card-main').textContent=showJapanese?w.written:w.english;$('card-main').lang=showJapanese?'ja':'en';
+    $('card-reading').textContent=showJapanese&&w.written!==w.reading?w.reading:'';$('flashcard').setAttribute('aria-label',t('flipLabel',{text:$('card-main').textContent}));
+    $('prompt-label').textContent=t(activePrompt==='japanese'?'look':'fromEnglish');$('hide-word').textContent=t(hiddenPrompt?'show':'hide');
+    $('spelling-word').textContent=activePrompt==='japanese'?(hiddenPrompt?'••••••':w.written):w.english;$('spelling-word').lang=activePrompt==='japanese'?'ja':'en';$('spelling-meaning').textContent=activePrompt==='japanese'?w.english:'';
+    $('feedback').textContent=feedbackKey?t(feedbackKey,{word:w.written,reading:w.reading,meaning:w.english}):'';
+    favoriteButton($('favorite-word'),w);
+  }
+  function renderNewWord(){
+    $('welcome').hidden=true;$('empty').hidden=true;$('complete').hidden=!session.done;$('exercise').hidden=session.done;
+    flipped=false;checked=false;hiddenPrompt=false;feedbackKey='';
+    $('flashcard').hidden=activeMode!=='cards';$('card-actions').hidden=activeMode!=='cards';$('spelling').hidden=activeMode!=='spelling';
+    $('hide-word').hidden=activePrompt!=='japanese';$('answer').value='';$('answer').disabled=false;$('check').disabled=false;$('feedback').className='';$('next').hidden=true;
+    paintStudy();if(session.done)$('again').focus({preventScroll:true});else if(activeMode==='cards')$('flashcard').focus({preventScroll:true});else if(activePrompt==='english')$('answer').focus({preventScroll:true});
+  }
+  function start(){const list=selected();if(!list.length||$('start').disabled)return;session=new Session(list);activeMode=$('mode').value;activeDirection=$('direction').value;activePrompt=$('prompt').value;renderNewWord();}
+  function grade(known){if(!session||session.done)return;session.grade(known);renderNewWord();}
+  function paintAccount(){
+    $('email').required=!recovery;$('password').autocomplete=recovery?'new-password':'current-password';
+    $('account-status').textContent=favorites.loading?t('loading'):favorites.loadFailed?t('loadError'):favorites.user?t('signedIn',{email:favorites.user.email||''}):t('guest');
+    $('account-availability').textContent=availability==='ready'?'':t(availability);
+    $('account-form').hidden=!client||!!favorites.user&&!recovery;$('logout').hidden=!favorites.user;
+    $('retry-sync').hidden=!favorites.loadFailed;$('update-password').hidden=!recovery;$('login').hidden=recovery;$('signup').hidden=recovery;$('forgot').hidden=recovery;
+    for(const id of ['login','signup','forgot','update-password','logout','retry-sync'])$(id).disabled=authBusy||favorites.loading||favorites.saving;
+    $('account-message').textContent=authBusy?t('working'):accountMessage?t(accountMessage):'';
+  }
+  function paintLanguage(){
+    document.documentElement.lang=lang==='zh'?'zh-CN':'en';document.title=t('pageTitle');
+    document.querySelectorAll('[data-text]').forEach(el=>{el.textContent=t(el.dataset.text);});
+    $('lesson-header').textContent=lang==='zh'?'单元':'Lesson';$('language').textContent=lang==='zh'?'English':'中文';$('language').setAttribute('aria-label',lang==='zh'?'Switch to English':'切换为中文');
+    $('answer').placeholder=t('placeholder');$('folders').setAttribute('aria-label',t('folders'));$('progress').setAttribute('aria-label',t('progress'));paintFolders();updateTypes(false);paintList();paintStudy();paintAccount();$('favorite-message').textContent=favoriteMessage?t(favoriteMessage):'';
+  }
+  favorites.changed=()=>{paintList();paintStudy();paintAccount();};
+  $('language').addEventListener('click',()=>{lang=lang==='zh'?'en':'zh';try{storage.setItem(languageKey,lang);}catch{}paintLanguage();});
+  $('start').addEventListener('click',start);$('again').addEventListener('click',start);$('pos').addEventListener('change',()=>updateTypes());
+  ['subtype','mode','direction','prompt','only-favorites'].forEach(id=>$(id).addEventListener('change',resetSelection));
+  $('favorite-word').addEventListener('click',()=>{if(session&&!session.done)toggleFavorite(session.current.id);});
+  $('flashcard').addEventListener('click',()=>{if(session&&!session.done){flipped=!flipped;paintStudy();}});
+  $('known').addEventListener('click',()=>grade(true));$('unknown').addEventListener('click',()=>grade(false));
+  $('hide-word').addEventListener('click',()=>{hiddenPrompt=!hiddenPrompt;paintStudy();if(hiddenPrompt)$('answer').focus();});
+  $('answer-form').addEventListener('submit',event=>{
+    event.preventDefault();if(composing||!session||session.done||checked)return;
+    if(!$('answer').value.trim()){feedbackKey='enterAnswer';paintStudy();$('answer').focus();return;}
+    checked=true;const correct=isCorrect(session.current,$('answer').value);feedbackKey=correct?'correct':'incorrect';$('feedback').className=correct?'correct':'incorrect';$('answer').disabled=true;$('check').disabled=true;$('next').hidden=false;$('next').dataset.correct=String(correct);paintStudy();$('next').focus({preventScroll:true});
+  });
+  $('answer').addEventListener('compositionstart',()=>{composing=true;});$('answer').addEventListener('compositionend',()=>{setTimeout(()=>{composing=false;},0);});
+  $('answer').addEventListener('keydown',event=>{if(event.key==='Enter'&&(event.isComposing||composing||event.keyCode===229))event.preventDefault();});
+  $('next').addEventListener('click',()=>{if(checked)grade($('next').dataset.correct==='true');});
+  async function syncUser(user,force=false){
+    if(!force&&authUserId===(user?.id||null))return;authUserId=user?.id||null;const generation=++authGeneration;
+    if(accountMessage==='loadError')accountMessage='';
+    resetSelection();favoriteMessage='';try{await favorites.switchUser(user);}catch{if(generation===authGeneration)accountMessage='loadError';}if(generation===authGeneration){resetSelection();paintAccount();}
+  }
+  async function accountAction(action){
+    if(!client||authBusy)return;
+    if(action!=='logout'){
+      if(action!=='update'&&!$('email').reportValidity())return;
+      if(['login','signup','update'].includes(action)&&!$('password').reportValidity())return;
+    }
+    authBusy=true;accountMessage='';paintAccount();
+    const email=$('email').value.trim(),password=$('password').value;
+    const redirect=new URL('japanese.html',location.href).href;
+    try{
+      let result;
+      if(action==='login')result=await client.auth.signInWithPassword({email,password});
+      if(action==='signup')result=await client.auth.signUp({email,password,options:{emailRedirectTo:redirect}});
+      if(action==='reset')result=await client.auth.resetPasswordForEmail(email,{redirectTo:redirect});
+      if(action==='update')result=await client.auth.updateUser({password});
+      if(action==='logout')result=await client.auth.signOut();
+      if(result.error)throw result.error;
+      if(action==='signup')accountMessage='confirmEmail';
+      if(action==='reset')accountMessage='resetSent';
+      if(action==='update'){accountMessage='passwordUpdated';recovery=false;}
+      if(action==='logout'){recovery=false;await syncUser(null);}
+      else if(result.data?.session)await syncUser(result.data.session.user);
+    }catch{accountMessage='authError';}finally{$('password').value='';authBusy=false;paintAccount();}
+  }
+  $('account-form').addEventListener('submit',event=>{event.preventDefault();accountAction(recovery?'update':'login');});
+  $('signup').addEventListener('click',()=>accountAction('signup'));$('forgot').addEventListener('click',()=>accountAction('reset'));$('update-password').addEventListener('click',()=>accountAction('update'));$('logout').addEventListener('click',()=>accountAction('logout'));
+  $('retry-sync').addEventListener('click',()=>syncUser(favorites.user,true));
+  async function initializeAccount(){
+    const config=window.JapaneseAccountConfig;if(!config?.supabaseUrl||!config?.publishableKey)return;
+    availability='connecting';paintAccount();
+    let subscription;
+    try{
+      const url=new URL(config.supabaseUrl);if(url.protocol!=='https:'||!config.publishableKey.startsWith('sb_publishable_'))throw Error('Invalid public configuration');
+      const {createClient}=await import('https://esm.sh/@supabase/supabase-js@2.119.0');
+      client=createClient(url.href,config.publishableKey);favorites.remote=favoritesAPI.remoteStore(client);availability='ready';
+      subscription=client.auth.onAuthStateChange((event,session)=>{
+        // Schedule SDK calls outside its auth event lock.
+        if(event==='PASSWORD_RECOVERY'){recovery=true;accountMessage='recovery';$('password').autocomplete='new-password';}
+        setTimeout(()=>{if(client)syncUser(session?.user||null).then(paintAccount);},0);
+      }).data.subscription;
+      const {data,error}=await client.auth.getSession();if(error)throw error;await syncUser(data.session?.user||null);paintAccount();
+    }catch{subscription?.unsubscribe();client=null;await syncUser(null);availability='authUnavailable';paintAccount();}
+  }
+  paintLanguage();initializeAccount();
+})();

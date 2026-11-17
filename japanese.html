@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Japanese Study · AdecoLab</title>
+  <link rel="stylesheet" href="japanese/style.css">
+  <script defer src="japanese/vocabulary.js"></script><script defer src="japanese/core.js"></script>
+  <script defer src="japanese/i18n.js"></script><script defer src="japanese/favorites.js"></script>
+  <script defer src="japanese/config.js"></script><script defer src="japanese/app.js"></script>
+</head>
+<body>
+  <header><a class="brand" href="index.html">AdecoLab <span>/ 日本語</span></a><div class="header-actions"><a href="index.html" data-text="tracker">Animal tracker & heatmap ↗</a><button id="language" type="button">中文</button></div></header>
+  <main>
+    <section class="intro"><p class="eyebrow">GENKI I · THIRD EDITION · LESSONS 01–08</p><h1><span class="headline" data-text="headline">A few more words, every day.</span><span lang="ja">ことばを、ひとつずつ。</span></h1><p data-text="intro"></p></section>
+    <div class="layout">
+      <aside class="panel"><h2 data-text="folders"></h2><nav id="folders"></nav><p class="aside-note" data-text="folderHelp"></p>
+        <details class="account-panel"><summary data-text="account"></summary><p id="account-status" class="muted" aria-live="polite"></p><p id="account-availability" class="muted"></p>
+          <form id="account-form" hidden><label for="email" data-text="email"></label><input id="email" type="email" required autocomplete="username" maxlength="254"><label for="password" data-text="password"></label><input id="password" type="password" required minlength="8" autocomplete="current-password" maxlength="128"><div class="auth-actions"><button id="login" type="submit" class="primary" data-text="login"></button><button id="signup" type="button" data-text="signup"></button><button id="forgot" type="button" data-text="forgot"></button><button id="update-password" type="button" hidden data-text="updatePassword"></button></div></form>
+          <button id="logout" hidden data-text="logout"></button><button id="retry-sync" hidden data-text="retry"></button><p id="account-message" role="status" class="muted"></p><p class="muted" data-text="accountHelp"></p>
+        </details>
+      </aside>
+      <div class="workspace">
+        <section class="panel filters">
+          <div class="filter-row"><label><span data-text="pos"></span><select id="pos"><option value="all" data-text="allTypes"></option><option value="noun" data-text="noun"></option><option value="verb" data-text="verb"></option><option value="adjective" data-text="adjective"></option><option value="other" data-text="other"></option></select></label><label><span data-text="subtype"></span><select id="subtype"></select></label><label><span data-text="mode"></span><select id="mode"><option value="cards" data-text="cards"></option><option value="spelling" data-text="spelling"></option></select></label></div>
+          <div class="filter-row"><label id="direction-wrap"><span data-text="front"></span><select id="direction"><option value="english" data-text="english"></option><option value="japanese" data-text="japanese"></option></select></label><label id="prompt-wrap" hidden><span data-text="prompt"></span><select id="prompt"><option value="japanese" data-text="copy"></option><option value="english" data-text="recall"></option></select></label><button id="start" class="primary" data-text="start"></button><span id="count" class="muted"></span></div>
+          <label class="favorite-filter"><input id="only-favorites" type="checkbox"><span data-text="onlyFavorites"></span><span id="favorite-count" class="badge"></span></label>
+          <p class="muted" data-text="favoriteHelp"></p><p id="settings-note" class="muted" aria-live="polite"></p><p id="favorite-message" class="muted" role="status"></p>
+        </section>
+        <section class="panel study">
+          <div class="study-heading"><h2 id="deck-title"></h2><span id="round" class="badge"></span></div>
+          <div class="progress-label"><span id="position"></span><span id="mastery"></span></div><progress id="progress" value="0" max="1"></progress>
+          <div id="welcome" class="welcome"><span lang="ja">はじめましょう</span><h3 data-text="welcomeTitle"></h3><p data-text="welcomeText"></p></div>
+          <div id="exercise" hidden>
+            <div class="word-toolbar"><p id="word-meta" class="muted"></p><button id="favorite-word" type="button" aria-pressed="false"></button></div>
+            <button id="flashcard" class="flashcard"><span id="card-label" class="eyebrow"></span><strong id="card-main"></strong><span id="card-reading" lang="ja"></span><span class="flip-hint" data-text="flip"></span></button>
+            <div id="card-actions" class="actions"><button id="unknown" data-text="unknown"></button><button id="known" class="primary" data-text="known"></button></div>
+            <div id="spelling" hidden>
+              <div class="spelling-prompt"><p class="eyebrow" id="prompt-label"></p><strong id="spelling-word"></strong><p id="spelling-meaning"></p><button id="hide-word" type="button"></button></div>
+              <form id="answer-form"><label for="answer" data-text="answer"></label><div class="answer-row"><input id="answer" lang="ja" autocomplete="off" autocapitalize="off" spellcheck="false"><button id="check" class="primary" type="submit" data-text="check"></button></div></form>
+              <p class="muted input-note" data-text="inputHelp"></p><div id="feedback" role="status" aria-live="polite"></div><button id="next" class="primary" hidden data-text="next"></button>
+            </div>
+          </div>
+          <div id="complete" class="welcome" hidden><span lang="ja">よくできました！</span><h3 data-text="completeTitle"></h3><p id="complete-text"></p><button id="again" class="primary" data-text="again"></button></div>
+          <p id="empty" class="welcome" hidden data-text="empty"></p>
+        </section>
+        <details class="panel"><summary><span data-text="list"></span> <span id="list-count"></span></summary><div class="table-scroll"><table><thead><tr><th id="lesson-header"></th><th data-text="japanese"></th><th data-text="reading"></th><th>English</th><th data-text="pos"></th><th data-text="favorites"></th></tr></thead><tbody id="word-list"></tbody></table></div></details>
+      </div>
+    </div>
+    <footer data-text="scope"></footer>
+  </main>
+  <noscript>Enable JavaScript to use Japanese study. / 请启用 JavaScript。</noscript>
+</body>
+</html>

@@ -18,6 +18,7 @@
         <p data-i18n="intro">这一版已经移除了 ROI 和目标模板框选逻辑，改回更简单的自动移动物体跟踪思路，主要目的就是先验证网站能否稳定运行，以及视频处理进度条能否正常移动。 [file:268]</p>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <a id="japaneseEntry" class="btn btn-secondary" href="japanese.html">日语学习 · Japanese</a>
         <button id="langToggle" class="btn theme" type="button">English</button>
         <button id="themeToggle" class="btn theme" type="button">Dark mode</button>
       </div>
@@ -374,5 +375,6 @@
     if(els.transparentExportToggle){exportTransparent=!!els.transparentExportToggle.checked;els.transparentExportToggle.addEventListener('change',()=>{exportTransparent=!!els.transparentExportToggle.checked;log(lang==='zh'?(exportTransparent?'已开启透明背景导出':'已关闭透明背景导出'):(exportTransparent?'Transparent export enabled':'Transparent export disabled'));drawHeatmap(tracks);drawTrackMap(tracks);});}
     setCanvasSize(baseWidth,baseHeight);bindRoiSelection();drawRawCanvas();drawHeatmap([]);drawTrackMap([]);applyLanguage();syncTheme();log('page initialized');
   </script>
+<script src="japanese/navigation-language.js"></script>
 </body>
 </html>
