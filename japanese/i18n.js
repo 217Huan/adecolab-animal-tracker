@@ -9,6 +9,11 @@
     account:['个人账号','Your account'],email:['邮箱','Email'],password:['密码（至少 8 位）','Password (at least 8 characters)'],login:['登录','Sign in'],signup:['注册','Create account'],logout:['退出登录','Sign out'],forgot:['忘记密码','Reset password'],updatePassword:['设置新密码','Set new password'],accountHelp:['注册后请查收确认邮件。登录后每个账号单独保存收藏；访客收藏不会自动并入账号。','After signing up, check your confirmation email. Each account has its own favorites; guest favorites are kept separate.'],notConfigured:['账号服务尚未启用。你仍可使用访客收藏和收藏练习。','Accounts are not enabled yet. Guest favorites and favorites practice are available.'],connecting:['正在连接账号服务…','Connecting to account service…'],authUnavailable:['账号服务连接失败。请检查网络后重试。','Could not connect to accounts. Check your connection and retry.'],authError:['操作未完成。请检查邮箱、密码、邮件确认状态和网络后重试。','Could not complete the request. Check your email, password, email confirmation and connection, then retry.'],confirmEmail:['注册请求已提交，请查收确认邮件后登录。','Sign-up request submitted. Check your email to confirm your account, then sign in.'],resetSent:['若该邮箱已注册，你将收到重置密码邮件。','If an account exists for that email, you will receive a password reset message.'],passwordUpdated:['密码已更新。','Password updated.'],working:['正在处理…','Working…'],recovery:['请在密码框中输入新密码，再点击「设置新密码」。','Enter a new password below, then select Set new password.']
   };
   pairs.reading=['读音（罗马字）','Pronunciation (romaji)'];
+  pairs.start=['开始学习 ↗','Start studying ↗'];
+  pairs.flip=['点击翻面 ↻','Click to flip ↻'];
+  pairs.previousCard=['浏览上一张未评分卡片','Browse previous ungraded card'];
+  pairs.nextCard=['浏览下一张未评分卡片','Browse next ungraded card'];
+  pairs.browseHint=['左右滑动切词 · 不改变掌握进度','Swipe to browse · progress stays unchanged'];
   pairs.placeholder=['输入平假名或片假名','Enter hiragana or katakana'];
   pairs.inputHelp=['请用平假名或片假名拼写，可使用日语键盘或设备的手写输入法。な形容词可带「な」；后缀请保留「〜」。罗马字用于辅助发音。','Write the answer in hiragana or katakana, using a Japanese keyboard or your device’s handwriting input. Na-adjectives may include な. Keep 〜 for suffixes. Romaji is a pronunciation aid.'];
   const messages={zh:{},en:{}};for(const [key,[zh,en]] of Object.entries(pairs)){messages.zh[key]=zh;messages.en[key]=en;}

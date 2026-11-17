@@ -10,6 +10,7 @@
   let lesson='all',session=null,flipped=false,checked=false,hiddenPrompt=false,composing=false;
   let activeMode='cards',activeDirection='english',activePrompt='japanese',feedbackKey='',favoriteMessage='';
   let client=null,availability='notConfigured',accountMessage='',authBusy=false,recovery=false,authUserId=null,authGeneration=0;
+  let cardAnimations=[],outgoingCard=null,gesture=null,suppressClick=false;
   const folderButtons=[];
   const selected=()=>selectWords(words,lesson,$('pos').value,$('subtype').value).filter(w=>!$('only-favorites').checked||favorites.ids.has(w.id));
   const folderTitle=()=>lesson==='all'?t('allLessons'):`${t('lesson',{n:lesson})} · ${lessons[Number(lesson)-1]}`;
@@ -25,6 +26,7 @@
     if(session&&!session.done)favoriteButton($('favorite-word'),session.current);
   }
   function resetSelection(){
+    clearCardMotion();
     session=null;feedbackKey='';$('exercise').hidden=true;$('complete').hidden=true;
     $('direction-wrap').hidden=$('mode').value!=='cards';$('prompt-wrap').hidden=$('mode').value!=='spelling';
     paintList();paintStudy();
@@ -49,23 +51,41 @@
     if(!session)return;
     if(session.done){$('complete-text').textContent=t('completeText',{total:session.total,round:session.round});return;}
     const w=session.current;$('word-meta').textContent=`${t('lesson',{n:w.lesson})} · ${typeName(w.type,lang)}`;
-    const showJapanese=(activeDirection==='japanese')!==flipped;
-    $('card-label').textContent=showJapanese?'日本語':'ENGLISH';$('card-main').textContent=showJapanese?w.kana:w.english;$('card-main').lang=showJapanese?'ja':'en';
-    $('card-reading').textContent=showJapanese?w.romaji:'';$('flashcard').setAttribute('aria-label',t('flipLabel',{text:$('card-main').textContent}));
+    const frontJapanese=activeDirection==='japanese';
+    for(const [prefix,isJapanese] of [['card',frontJapanese],['card-back',!frontJapanese]]){
+      $(`${prefix}-label`).textContent=isJapanese?'日本語':'ENGLISH';$(`${prefix}-main`).textContent=isJapanese?w.kana:w.english;$(`${prefix}-main`).lang=isJapanese?'ja':'en';$(`${prefix}-reading`).textContent=isJapanese?w.romaji:'';
+    }
+    $('flashcard').classList.toggle('is-flipped',flipped);$('flashcard').setAttribute('aria-pressed',String(flipped));
+    $('flashcard').querySelector('.card-front').setAttribute('aria-hidden',String(flipped));$('flashcard').querySelector('.card-back').setAttribute('aria-hidden',String(!flipped));
+    $('flashcard').setAttribute('aria-label',t('flipLabel',{text:(frontJapanese!==flipped)?`${w.kana}, ${w.romaji}`:w.english}));
+    const onlyOne=session.queue.length-session.index<2;for(const id of ['previous-card','next-card'])$(id).disabled=onlyOne;
     $('prompt-label').textContent=t(activePrompt==='japanese'?'look':'fromEnglish');$('hide-word').textContent=t(hiddenPrompt?'show':'hide');
     $('spelling-word').textContent=activePrompt==='japanese'?(hiddenPrompt?'••••••':w.kana):w.english;$('spelling-word').lang=activePrompt==='japanese'?'ja':'en';$('spelling-meaning').textContent=activePrompt==='japanese'?w.english:'';
     $('feedback').textContent=feedbackKey?t(feedbackKey,{word:w.kana,reading:w.romaji,meaning:w.english}):'';
     favoriteButton($('favorite-word'),w);
   }
   function renderNewWord(){
+    $('flashcard').classList.add('is-resetting');
     $('welcome').hidden=true;$('empty').hidden=true;$('complete').hidden=!session.done;$('exercise').hidden=session.done;
     flipped=false;checked=false;hiddenPrompt=false;feedbackKey='';
-    $('flashcard').hidden=activeMode!=='cards';$('card-actions').hidden=activeMode!=='cards';$('spelling').hidden=activeMode!=='spelling';
+    $('card-stage').hidden=activeMode!=='cards';$('card-navigation').hidden=activeMode!=='cards';$('card-actions').hidden=activeMode!=='cards';$('spelling').hidden=activeMode!=='spelling';
     $('hide-word').hidden=activePrompt!=='japanese';$('answer').value='';$('answer').disabled=false;$('check').disabled=false;$('feedback').className='';$('next').hidden=true;
-    paintStudy();if(session.done)$('again').focus({preventScroll:true});else if(activeMode==='cards')$('flashcard').focus({preventScroll:true});else if(activePrompt==='english')$('answer').focus({preventScroll:true});
+    paintStudy();void $('flashcard').offsetWidth;$('flashcard').classList.remove('is-resetting');
+    if(session.done)$('again').focus({preventScroll:true});else if(activeMode==='cards')$('flashcard').focus({preventScroll:true});else if(activePrompt==='english')$('answer').focus({preventScroll:true});
   }
-  function start(){const list=selected();if(!list.length||$('start').disabled)return;session=new Session(list);activeMode=$('mode').value;activeDirection=$('direction').value;activePrompt=$('prompt').value;renderNewWord();}
-  function grade(known){if(!session||session.done)return;session.grade(known);renderNewWord();}
+  function clearCardMotion(){for(const animation of cardAnimations)animation.cancel();cardAnimations=[];outgoingCard?.remove();outgoingCard=null;$('flashcard').style.transform='';}
+  function changeCard(change,direction){
+    clearCardMotion();const card=$('flashcard'),reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(activeMode==='cards'&&!reduce&&card.animate){outgoingCard=card.cloneNode(true);outgoingCard.removeAttribute('id');outgoingCard.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));outgoingCard.classList.add('outgoing-card');outgoingCard.setAttribute('aria-hidden','true');outgoingCard.inert=true;outgoingCard.tabIndex=-1;$('card-stage').append(outgoingCard);}
+    change();renderNewWord();
+    if(!outgoingCard||session.done){clearCardMotion();return;}
+    const old=outgoingCard,options={duration:240,easing:'cubic-bezier(0.23, 1, 0.32, 1)'};
+    const exit=old.animate([{transform:'translateX(0)',opacity:1},{transform:`translateX(${-direction*18}%)`,opacity:0}],{...options,fill:'forwards'});
+    const enter=card.animate([{transform:`translateX(${direction*18}%)`,opacity:0},{transform:'translateX(0)',opacity:1}],options);cardAnimations=[exit,enter];exit.finished.then(()=>{old.remove();if(outgoingCard===old)outgoingCard=null;}).catch(()=>{});
+  }
+  function start(){const list=selected();if(!list.length||$('start').disabled)return;clearCardMotion();session=new Session(list);activeMode=$('mode').value;activeDirection=$('direction').value;activePrompt=$('prompt').value;renderNewWord();}
+  function grade(known){if(!session||session.done)return;changeCard(()=>session.grade(known),known?1:-1);}
+  function navigateCard(direction){if(!session||session.done||activeMode!=='cards'||session.queue.length-session.index<2)return;changeCard(()=>session.navigate(direction),direction);}
   function paintAccount(){
     $('email').required=!recovery;$('password').autocomplete=recovery?'new-password':'current-password';
     $('account-status').textContent=favorites.loading?t('loading'):favorites.loadFailed?t('loadError'):favorites.user?t('signedIn',{email:favorites.user.email||''}):t('guest');
@@ -78,6 +98,7 @@
   function paintLanguage(){
     document.documentElement.lang=lang==='zh'?'zh-CN':'en';document.title=t('pageTitle');
     document.querySelectorAll('[data-text]').forEach(el=>{el.textContent=t(el.dataset.text);});
+    document.querySelectorAll('[data-label]').forEach(el=>{el.setAttribute('aria-label',t(el.dataset.label));});
     $('lesson-header').textContent=lang==='zh'?'单元':'Lesson';$('language').textContent=lang==='zh'?'English':'中文';$('language').setAttribute('aria-label',lang==='zh'?'Switch to English':'切换为中文');
     $('answer').placeholder=t('placeholder');$('folders').setAttribute('aria-label',t('folders'));$('progress').setAttribute('aria-label',t('progress'));paintFolders();updateTypes(false);paintList();paintStudy();paintAccount();$('favorite-message').textContent=favoriteMessage?t(favoriteMessage):'';
   }
@@ -86,7 +107,13 @@
   $('start').addEventListener('click',start);$('again').addEventListener('click',start);$('pos').addEventListener('change',()=>updateTypes());
   ['subtype','mode','direction','prompt','only-favorites'].forEach(id=>$(id).addEventListener('change',resetSelection));
   $('favorite-word').addEventListener('click',()=>{if(session&&!session.done)toggleFavorite(session.current.id);});
-  $('flashcard').addEventListener('click',()=>{if(session&&!session.done){flipped=!flipped;paintStudy();}});
+  $('flashcard').addEventListener('click',()=>{if(suppressClick){suppressClick=false;return;}if(session&&!session.done){flipped=!flipped;paintStudy();}});
+  $('previous-card').addEventListener('click',()=>navigateCard(-1));$('next-card').addEventListener('click',()=>navigateCard(1));
+  $('flashcard').addEventListener('keydown',event=>{if(['ArrowLeft','ArrowRight'].includes(event.key)){event.preventDefault();navigateCard(event.key==='ArrowRight'?1:-1);}});
+  $('flashcard').addEventListener('pointerdown',event=>{if(!event.isPrimary||event.button!==0||!session||session.done)return;suppressClick=false;clearCardMotion();gesture={id:event.pointerId,x:event.clientX,y:event.clientY,dx:0,dragging:false};});
+  $('flashcard').addEventListener('pointermove',event=>{if(!gesture||gesture.id!==event.pointerId)return;const dx=event.clientX-gesture.x,dy=event.clientY-gesture.y;if(!gesture.dragging){if(Math.abs(dy)>Math.abs(dx)&&Math.abs(dy)>10){gesture=null;return;}if(Math.abs(dx)<10)return;gesture.dragging=true;$('flashcard').setPointerCapture(event.pointerId);}gesture.dx=dx;if(!matchMedia('(prefers-reduced-motion: reduce)').matches)$('flashcard').style.transform=`translateX(${dx*.65}px)`;});
+  function endGesture(event,cancelled=false){if(!gesture||gesture.id!==event.pointerId)return;const {dx,dragging}=gesture;gesture=null;if($('flashcard').hasPointerCapture(event.pointerId))$('flashcard').releasePointerCapture(event.pointerId);if(!dragging)return;suppressClick=true;setTimeout(()=>{suppressClick=false;},0);$('flashcard').style.transform='';if(!cancelled&&Math.abs(dx)>=60)navigateCard(dx<0?1:-1);}
+  $('flashcard').addEventListener('pointerup',event=>endGesture(event));$('flashcard').addEventListener('pointercancel',event=>endGesture(event,true));
   $('known').addEventListener('click',()=>grade(true));$('unknown').addEventListener('click',()=>grade(false));
   $('hide-word').addEventListener('click',()=>{hiddenPrompt=!hiddenPrompt;paintStudy();if(hiddenPrompt)$('answer').focus();});
   $('answer-form').addEventListener('submit',event=>{

@@ -13,6 +13,12 @@
     constructor(words,random=Math.random){this.random=random;this.total=words.length;this.queue=shuffle(words,random);this.missed=[];this.index=0;this.round=1;this.mastered=0;}
     get done(){return this.queue.length===0;}
     get current(){return this.queue[this.index];}
+    navigate(direction){
+      // Browse only ungraded cards; browsing never marks a word as mastered.
+      const remaining=this.queue.slice(this.index);if(remaining.length<2)return;
+      if(direction>0)remaining.push(remaining.shift());else remaining.unshift(remaining.pop());
+      this.queue.splice(this.index,remaining.length,...remaining);
+    }
     grade(known){
       if(this.done)throw new Error('Session is complete');
       if(known)this.mastered++;else this.missed.push(this.current);
