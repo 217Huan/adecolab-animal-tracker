@@ -502,6 +502,41 @@
     'かける':['めがねをかける','眼鏡をかける'], 'ふる':['あめがふる','雨が降る','ゆきがふる','雪が降る'],
     'ざんねん':['ざんねんですね','残念ですね'] };
   words.forEach(w=>{w.answers=[...new Set([w.reading,w.written,...(variants[w.reading]||[])])];if(w.type==='な形容词')w.answers.push(w.reading+'な',w.written+'な');});
-  const data={words,lessons:['New Friends','Shopping','Making a Date','The First Date','A Trip to Okinawa',"A Day in Robert’s Life",'Family Picture','Barbecue']};
+  function kanaDisplay(text){return text.replace(/[ＴT]シャツ/g,'ティーシャツ').replace(/[ＬL]サイズ/g,'エルサイズ');}
+  // ASCII Hepburn-style romaji. Long vowels are written out (ou, oo, uu),
+  // so pronunciation remains readable without macrons or another dependency.
+  const syllables=Object.fromEntries((
+    'あ:a い:i う:u え:e お:o か:ka き:ki く:ku け:ke こ:ko '+
+    'さ:sa し:shi す:su せ:se そ:so た:ta ち:chi つ:tsu て:te と:to '+
+    'な:na に:ni ぬ:nu ね:ne の:no は:ha ひ:hi ふ:fu へ:he ほ:ho '+
+    'ま:ma み:mi む:mu め:me も:mo や:ya ゆ:yu よ:yo '+
+    'ら:ra り:ri る:ru れ:re ろ:ro わ:wa を:wo ん:n '+
+    'が:ga ぎ:gi ぐ:gu げ:ge ご:go ざ:za じ:ji ず:zu ぜ:ze ぞ:zo '+
+    'だ:da ぢ:ji づ:zu で:de ど:do ば:ba び:bi ぶ:bu べ:be ぼ:bo '+
+    'ぱ:pa ぴ:pi ぷ:pu ぺ:pe ぽ:po ゔ:vu ぁ:a ぃ:i ぅ:u ぇ:e ぉ:o '+
+    'ゃ:ya ゅ:yu ょ:yo ゎ:wa 〜:~ ／:/ /:/ っ:'
+  ).split(' ').map(pair=>pair.split(':')));
+  const combinations={'しぇ':'she','じぇ':'je','ちぇ':'che','てぃ':'ti','でぃ':'di','とぅ':'tu','どぅ':'du','ふぁ':'fa','ふぃ':'fi','ふぇ':'fe','ふぉ':'fo','うぃ':'wi','うぇ':'we','うぉ':'wo'};
+  for(const [kana,stem] of Object.entries({'き':'ky','ぎ':'gy','し':'sh','じ':'j','ち':'ch','ぢ':'j','に':'ny','ひ':'hy','び':'by','ぴ':'py','み':'my','り':'ry'})){
+    for(const [small,vowel] of [['ゃ','a'],['ゅ','u'],['ょ','o']])combinations[kana+small]=stem+vowel;
+  }
+  function kanaToRomaji(text){
+    const kana=kanaDisplay(text).normalize('NFC').replace(/[ァ-ヶ]/g,char=>String.fromCharCode(char.charCodeAt(0)-0x60));
+    let result='',double=false;
+    for(let i=0;i<kana.length;i++){
+      const char=kana[i];
+      if(char==='っ'){double=true;continue;}
+      if(char==='ー'){result+=(result.match(/[aeiou](?=[^aeiou]*$)/)||[''])[0];continue;}
+      let chunk=combinations[kana.slice(i,i+2)];if(chunk)i++;else chunk=syllables[char];
+      if(chunk===undefined)throw Error('Unsupported kana: '+char);
+      if(char==='ん'&&/[あいうえおやゆよ]/.test(kana[i+1]||''))chunk="n'";
+      if(chunk==='/')chunk=' / ';
+      if(double){chunk=(chunk.startsWith('ch')?'t':chunk[0])+chunk;double=false;}
+      result+=chunk;
+    }
+    return result;
+  }
+  words.forEach(w=>{w.kana=kanaDisplay(w.reading);w.romaji=kanaToRomaji(w.kana);});
+  const data={words,kanaToRomaji,lessons:['New Friends','Shopping','Making a Date','The First Date','A Trip to Okinawa',"A Day in Robert’s Life",'Family Picture','Barbecue']};
   if(typeof module!=='undefined')module.exports=data;else root.JapaneseVocabulary=data;
 })(typeof globalThis!=='undefined'?globalThis:this);
