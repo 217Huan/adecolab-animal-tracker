@@ -1,6 +1,6 @@
 # Enable personal accounts
 
-The bilingual interface and browser-local guest favorites work without configuration. Real accounts and cloud favorites require a Supabase project. This repository contains the integration, not a provisioned backend.
+The bilingual interface and browser-local guest favorites work without configuration. The project URL and public publishable key are now configured for the owner's Supabase project. The favorites table, RLS policies, `https://adecolab.space` Site URL and `https://adecolab.space/japanese.html` callback were configured on 2026-11-17. Email authentication, email confirmation and an 8-character password minimum are enabled. Custom SMTP and live account acceptance tests still need completion before inviting classmates.
 
 1. Create a Supabase project in your own account. Keep the database password private.
 2. Run the complete contents of `japanese/supabase.sql` once in that project's SQL Editor. This creates `vocabulary_favorites`, enables row-level security, and allows authenticated users to select, insert and delete only their own rows. Anonymous users have no table access. No passwords are stored in this table.
@@ -20,6 +20,10 @@ Use two test email accounts owned by you (A and B); don't use classmates' creden
 - Request a password reset, open the email link, enter a new password and use Set new password. Confirm sign-in with the new password.
 
 Do not claim live authentication or database isolation is verified until these checks pass against the configured project. Local automated tests exercise account transitions and persistence with an injected mock data source, not a live Supabase database.
+
+## Cloudflare deployment
+
+The existing `adecolab-animal-tracker` Worker uses the GitHub repository's `main` branch. Its build command is `node scripts/build-static.cjs`; production deploy remains `npx wrangler deploy`, and preview versions use `npx wrangler versions upload`. `wrangler.jsonc` identifies the static assets output as `dist/`. The build copies only the runtime HTML/JS/CSS and `_redirects`; docs, SQL, tests, local PDF renders and Git metadata are excluded. `_redirects` serves the root URL from `index.html` while preserving `japanese.html` for auth callbacks.
 
 ## Behavior
 
