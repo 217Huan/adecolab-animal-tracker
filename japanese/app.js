@@ -14,13 +14,13 @@
   const selected=()=>selectWords(words,lesson,$('pos').value,$('subtype').value).filter(w=>!$('only-favorites').checked||favorites.ids.has(w.id));
   const folderTitle=()=>lesson==='all'?t('allLessons'):`${t('lesson',{n:lesson})} · ${lessons[Number(lesson)-1]}`;
   function textCell(row,value,ja=false){const cell=document.createElement('td');cell.textContent=value;if(ja)cell.lang='ja';row.append(cell);return cell;}
-  function favoriteButton(button,w,short=false){const saved=favorites.ids.has(w.id);button.textContent=short?(saved?'★':'☆'):t(saved?'saved':'save');button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',t(saved?'removeLabel':'saveLabel',{word:w.written}));button.disabled=favorites.loading||favorites.saving||favorites.loadFailed;}
+  function favoriteButton(button,w,short=false){const saved=favorites.ids.has(w.id);button.textContent=short?(saved?'★':'☆'):t(saved?'saved':'save');button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',t(saved?'removeLabel':'saveLabel',{word:w.kana}));button.disabled=favorites.loading||favorites.saving||favorites.loadFailed;}
   async function toggleFavorite(id){favoriteMessage='';try{await favorites.toggle(id);}catch{favoriteMessage='saveError';}$('favorite-message').textContent=favoriteMessage?t(favoriteMessage):'';}
   function paintList(){
     const list=selected();$('count').textContent=t('wordCount',{n:list.length});$('list-count').textContent=`(${list.length})`;
     $('favorite-count').textContent=favorites.ids.size;$('start').disabled=!list.length||(favorites.loading&&$('only-favorites').checked)||favorites.loadFailed;
     $('word-list').replaceChildren();const fragment=document.createDocumentFragment();
-    list.forEach(w=>{const row=document.createElement('tr');textCell(row,w.lesson);textCell(row,w.written,true);textCell(row,w.reading,true);textCell(row,w.english);textCell(row,typeName(w.type,lang));const cell=textCell(row,'');const button=document.createElement('button');button.type='button';favoriteButton(button,w,true);button.addEventListener('click',()=>toggleFavorite(w.id));cell.append(button);fragment.append(row);});$('word-list').append(fragment);
+    list.forEach(w=>{const row=document.createElement('tr');textCell(row,w.lesson);textCell(row,w.kana,true);textCell(row,w.romaji);textCell(row,w.english);textCell(row,typeName(w.type,lang));const cell=textCell(row,'');const button=document.createElement('button');button.type='button';favoriteButton(button,w,true);button.addEventListener('click',()=>toggleFavorite(w.id));cell.append(button);fragment.append(row);});$('word-list').append(fragment);
     if(!session){$('welcome').hidden=!list.length;$('empty').hidden=!!list.length;}
     if(session&&!session.done)favoriteButton($('favorite-word'),session.current);
   }
@@ -50,11 +50,11 @@
     if(session.done){$('complete-text').textContent=t('completeText',{total:session.total,round:session.round});return;}
     const w=session.current;$('word-meta').textContent=`${t('lesson',{n:w.lesson})} · ${typeName(w.type,lang)}`;
     const showJapanese=(activeDirection==='japanese')!==flipped;
-    $('card-label').textContent=showJapanese?'日本語':'ENGLISH';$('card-main').textContent=showJapanese?w.written:w.english;$('card-main').lang=showJapanese?'ja':'en';
-    $('card-reading').textContent=showJapanese&&w.written!==w.reading?w.reading:'';$('flashcard').setAttribute('aria-label',t('flipLabel',{text:$('card-main').textContent}));
+    $('card-label').textContent=showJapanese?'日本語':'ENGLISH';$('card-main').textContent=showJapanese?w.kana:w.english;$('card-main').lang=showJapanese?'ja':'en';
+    $('card-reading').textContent=showJapanese?w.romaji:'';$('flashcard').setAttribute('aria-label',t('flipLabel',{text:$('card-main').textContent}));
     $('prompt-label').textContent=t(activePrompt==='japanese'?'look':'fromEnglish');$('hide-word').textContent=t(hiddenPrompt?'show':'hide');
-    $('spelling-word').textContent=activePrompt==='japanese'?(hiddenPrompt?'••••••':w.written):w.english;$('spelling-word').lang=activePrompt==='japanese'?'ja':'en';$('spelling-meaning').textContent=activePrompt==='japanese'?w.english:'';
-    $('feedback').textContent=feedbackKey?t(feedbackKey,{word:w.written,reading:w.reading,meaning:w.english}):'';
+    $('spelling-word').textContent=activePrompt==='japanese'?(hiddenPrompt?'••••••':w.kana):w.english;$('spelling-word').lang=activePrompt==='japanese'?'ja':'en';$('spelling-meaning').textContent=activePrompt==='japanese'?w.english:'';
+    $('feedback').textContent=feedbackKey?t(feedbackKey,{word:w.kana,reading:w.romaji,meaning:w.english}):'';
     favoriteButton($('favorite-word'),w);
   }
   function renderNewWord(){
