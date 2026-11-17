@@ -46,6 +46,6 @@ test('tracker scripts remain identical to the original repository version',()=>{
   const fs=require('node:fs'),cp=require('node:child_process');
   const original=cp.execFileSync('git',['show','HEAD:index.html'],{encoding:'utf8'});
   const current=fs.readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8');
-  const scripts=html=>[...html.replace(/\r\n/g,'\n').matchAll(/<script\b[^>]*>[\s\S]*?<\/script>/g)].map(m=>m[0]);
+  const scripts=html=>[...html.replace(/\r\n/g,'\n').matchAll(/<script\b[^>]*>[\s\S]*?<\/script>/g)].map(m=>m[0]).filter(s=>!s.includes('src="japanese/navigation-language.js"'));
   assert.deepEqual(scripts(current),scripts(original));
 });

@@ -1,49 +1,53 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>日语学习 · AdecoLab</title>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Japanese Study · AdecoLab</title>
   <link rel="stylesheet" href="japanese/style.css">
-  <script defer src="japanese/vocabulary.js"></script>
-  <script defer src="japanese/core.js"></script>
-  <script defer src="japanese/app.js"></script>
+  <script defer src="japanese/vocabulary.js"></script><script defer src="japanese/core.js"></script>
+  <script defer src="japanese/i18n.js"></script><script defer src="japanese/favorites.js"></script>
+  <script defer src="japanese/config.js"></script><script defer src="japanese/app.js"></script>
 </head>
 <body>
-  <header><a class="brand" href="index.html">AdecoLab <span>/ 日本語</span></a><a href="index.html">动物轨迹与热力图 ↗</a></header>
+  <header><a class="brand" href="index.html">AdecoLab <span>/ 日本語</span></a><div class="header-actions"><a href="index.html" data-text="tracker">Animal tracker & heatmap ↗</a><button id="language" type="button">中文</button></div></header>
   <main>
-    <section class="intro"><p class="eyebrow">GENKI I · THIRD EDITION · LESSONS 01–08</p><h1>每天多记住一点。<span lang="ja">ことばを、ひとつずつ。</span></h1><p>按单元开始，用卡片熟悉词汇，再用拼写巩固。不会的词，下一轮继续。</p></section>
+    <section class="intro"><p class="eyebrow">GENKI I · THIRD EDITION · LESSONS 01–08</p><h1><span class="headline" data-text="headline">A few more words, every day.</span><span lang="ja">ことばを、ひとつずつ。</span></h1><p data-text="intro"></p></section>
     <div class="layout">
-      <aside class="panel"><h2>词汇文件夹</h2><nav id="folders" aria-label="单元文件夹"></nav><p class="aside-note">选择「全部单元」与一种词性，即可跨单元复习。</p></aside>
+      <aside class="panel"><h2 data-text="folders"></h2><nav id="folders"></nav><p class="aside-note" data-text="folderHelp"></p>
+        <details class="account-panel"><summary data-text="account"></summary><p id="account-status" class="muted" aria-live="polite"></p><p id="account-availability" class="muted"></p>
+          <form id="account-form" hidden><label for="email" data-text="email"></label><input id="email" type="email" required autocomplete="username" maxlength="254"><label for="password" data-text="password"></label><input id="password" type="password" required minlength="8" autocomplete="current-password" maxlength="128"><div class="auth-actions"><button id="login" type="submit" class="primary" data-text="login"></button><button id="signup" type="button" data-text="signup"></button><button id="forgot" type="button" data-text="forgot"></button><button id="update-password" type="button" hidden data-text="updatePassword"></button></div></form>
+          <button id="logout" hidden data-text="logout"></button><button id="retry-sync" hidden data-text="retry"></button><p id="account-message" role="status" class="muted"></p><p class="muted" data-text="accountHelp"></p>
+        </details>
+      </aside>
       <div class="workspace">
-        <section class="panel filters" aria-label="练习设置">
-          <div class="filter-row"><label>词性<select id="pos"><option value="all">全部词性</option><option value="noun">名词</option><option value="verb">动词</option><option value="adjective">形容词</option><option value="other">其他 / 表达</option></select></label><label>细分类<select id="subtype"><option value="all">全部分类</option></select></label><label>学习模式<select id="mode"><option value="cards">翻转卡片</option><option value="spelling">拼写练习</option></select></label></div>
-          <div class="filter-row"><label id="direction-wrap">卡片正面<select id="direction"><option value="english">英文释义</option><option value="japanese">日语词汇</option></select></label><label id="prompt-wrap" hidden>拼写提示<select id="prompt"><option value="japanese">日语词汇（看词后默写）</option><option value="english">英文释义（回忆日语）</option></select></label><button id="start" class="primary">开始 / 重新开始</button><span id="count" class="muted"></span></div>
-          <p id="settings-note" class="muted" aria-live="polite">选择文件夹和模式，然后开始。</p>
+        <section class="panel filters">
+          <div class="filter-row"><label><span data-text="pos"></span><select id="pos"><option value="all" data-text="allTypes"></option><option value="noun" data-text="noun"></option><option value="verb" data-text="verb"></option><option value="adjective" data-text="adjective"></option><option value="other" data-text="other"></option></select></label><label><span data-text="subtype"></span><select id="subtype"></select></label><label><span data-text="mode"></span><select id="mode"><option value="cards" data-text="cards"></option><option value="spelling" data-text="spelling"></option></select></label></div>
+          <div class="filter-row"><label id="direction-wrap"><span data-text="front"></span><select id="direction"><option value="english" data-text="english"></option><option value="japanese" data-text="japanese"></option></select></label><label id="prompt-wrap" hidden><span data-text="prompt"></span><select id="prompt"><option value="japanese" data-text="copy"></option><option value="english" data-text="recall"></option></select></label><button id="start" class="primary" data-text="start"></button><span id="count" class="muted"></span></div>
+          <label class="favorite-filter"><input id="only-favorites" type="checkbox"><span data-text="onlyFavorites"></span><span id="favorite-count" class="badge"></span></label>
+          <p class="muted" data-text="favoriteHelp"></p><p id="settings-note" class="muted" aria-live="polite"></p><p id="favorite-message" class="muted" role="status"></p>
         </section>
-        <section class="panel study" aria-label="学习区">
-          <div class="study-heading"><h2 id="deck-title">全部单元</h2><span id="round" class="badge">准备开始</span></div>
-          <div class="progress-label"><span id="position">等待开始</span><span id="mastery">已掌握 0</span></div><progress id="progress" value="0" max="1" aria-label="本次掌握进度"></progress>
-          <div id="welcome" class="welcome"><span lang="ja">はじめましょう</span><h3>选好范围，就从第一张开始。</h3><p>每轮只重复「不知道」或拼写错误的词，直到这一组全部掌握。</p></div>
+        <section class="panel study">
+          <div class="study-heading"><h2 id="deck-title"></h2><span id="round" class="badge"></span></div>
+          <div class="progress-label"><span id="position"></span><span id="mastery"></span></div><progress id="progress" value="0" max="1"></progress>
+          <div id="welcome" class="welcome"><span lang="ja">はじめましょう</span><h3 data-text="welcomeTitle"></h3><p data-text="welcomeText"></p></div>
           <div id="exercise" hidden>
-            <p id="word-meta" class="muted"></p>
-            <button id="flashcard" class="flashcard" aria-label="翻转词汇卡片"><span id="card-label" class="eyebrow">ENGLISH</span><strong id="card-main"></strong><span id="card-reading" lang="ja"></span><span class="flip-hint">点击卡片翻面 ↻</span></button>
-            <div id="card-actions" class="actions"><button id="unknown">不知道 · 再练一次</button><button id="known" class="primary">知道 · 已掌握</button></div>
+            <div class="word-toolbar"><p id="word-meta" class="muted"></p><button id="favorite-word" type="button" aria-pressed="false"></button></div>
+            <button id="flashcard" class="flashcard"><span id="card-label" class="eyebrow"></span><strong id="card-main"></strong><span id="card-reading" lang="ja"></span><span class="flip-hint" data-text="flip"></span></button>
+            <div id="card-actions" class="actions"><button id="unknown" data-text="unknown"></button><button id="known" class="primary" data-text="known"></button></div>
             <div id="spelling" hidden>
-              <div class="spelling-prompt"><p class="eyebrow" id="prompt-label"></p><strong id="spelling-word"></strong><p id="spelling-meaning"></p><button id="hide-word" type="button">隐藏日语提示</button></div>
-              <form id="answer-form"><label for="answer">输入日语答案</label><div class="answer-row"><input id="answer" lang="ja" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="日语假名或汉字"><button id="check" class="primary" type="submit">检查答案</button></div></form>
-              <p class="muted input-note">可使用设备的日语键盘或手写输入法将文字输入上方。接受列明的假名 / 汉字；な形容词可带「な」。后缀请保留「〜」。</p>
-              <div id="feedback" role="status" aria-live="polite"></div><button id="next" class="primary" hidden>下一词 →</button>
+              <div class="spelling-prompt"><p class="eyebrow" id="prompt-label"></p><strong id="spelling-word"></strong><p id="spelling-meaning"></p><button id="hide-word" type="button"></button></div>
+              <form id="answer-form"><label for="answer" data-text="answer"></label><div class="answer-row"><input id="answer" lang="ja" autocomplete="off" autocapitalize="off" spellcheck="false"><button id="check" class="primary" type="submit" data-text="check"></button></div></form>
+              <p class="muted input-note" data-text="inputHelp"></p><div id="feedback" role="status" aria-live="polite"></div><button id="next" class="primary" hidden data-text="next"></button>
             </div>
           </div>
-          <div id="complete" class="welcome" hidden><span lang="ja">よくできました！</span><h3>这一组，全部掌握。</h3><p id="complete-text"></p><button id="again" class="primary">再练一遍</button></div>
-          <p id="empty" class="welcome" hidden>这个单元没有所选词性的词汇，请选择其他分类。</p>
+          <div id="complete" class="welcome" hidden><span lang="ja">よくできました！</span><h3 data-text="completeTitle"></h3><p id="complete-text"></p><button id="again" class="primary" data-text="again"></button></div>
+          <p id="empty" class="welcome" hidden data-text="empty"></p>
         </section>
-        <details class="panel"><summary>查看所选词汇 <span id="list-count"></span></summary><div class="table-scroll"><table><thead><tr><th>单元</th><th>日语</th><th>读音</th><th>English</th><th>词性</th></tr></thead><tbody id="word-list"></tbody></table></div></details>
+        <details class="panel"><summary><span data-text="list"></span> <span id="list-count"></span></summary><div class="table-scroll"><table><thead><tr><th id="lesson-header"></th><th data-text="japanese"></th><th data-text="reading"></th><th>English</th><th data-text="pos"></th><th data-text="favorites"></th></tr></thead><tbody id="word-list"></tbody></table></div></details>
       </div>
     </div>
-    <footer>范围：第 1–8 单元的 Vocabulary 词汇表（含第 1 单元 Additional Vocabulary）。<br>教材中的搭配括号简化为独立词条；不包含后续单元、课后阅读及独立 Useful Expressions 栏目。</footer>
+    <footer data-text="scope"></footer>
   </main>
-  <noscript>请启用 JavaScript 后使用词汇学习功能。</noscript>
+  <noscript>Enable JavaScript to use Japanese study. / 请启用 JavaScript。</noscript>
 </body>
 </html>
