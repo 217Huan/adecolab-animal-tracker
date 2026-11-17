@@ -5,6 +5,13 @@
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1); --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 * { box-sizing: border-box; }
+select, select::picker(select) { appearance: base-select; }
+select::picker(select) { border: 1px solid #dedbf4; border-radius: 14px; padding: 6px; background: white; box-shadow: 0 12px 32px #25294318; }
+select option { padding: 10px 12px; border-radius: 9px; }
+select option:checked { background: #eeedff; color: #5148db; }
+.selection-bar { flex-wrap: wrap; }
+.practice-settings[open] { flex-basis: 100%; max-width: 100%; }
+.practice-settings[open] .settings-content { width: 100%; }
 body { margin: 0; background: radial-gradient(ellipse at 90% 0%, #ecebff 0, transparent 42%); }
 button, input, select { font: inherit; }
 button, a, select, input { outline-offset: 4px; }

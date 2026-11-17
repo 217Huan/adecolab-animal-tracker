@@ -10,7 +10,7 @@
   function normalize(text){return String(text).normalize('NFKC').replace(/[\s　]/gu,'').trim();}
   function isCorrect(word,answer){const value=normalize(answer);return !!value&&word.answers.some(a=>normalize(a)===value);}
   class Session{
-    constructor(words,random=Math.random){this.random=random;this.total=words.length;this.queue=shuffle(words,random);this.missed=[];this.index=0;this.round=1;this.mastered=0;}
+    constructor(words,random=Math.random,randomOrder=true){this.random=random;this.randomOrder=randomOrder;this.total=words.length;this.queue=randomOrder?shuffle(words,random):[...words];this.missed=[];this.index=0;this.round=1;this.mastered=0;}
     get done(){return this.queue.length===0;}
     get current(){return this.queue[this.index];}
     navigate(direction){
@@ -23,7 +23,7 @@
       if(this.done)throw new Error('Session is complete');
       if(known)this.mastered++;else this.missed.push(this.current);
       this.index++;
-      if(this.index===this.queue.length){this.queue=shuffle(this.missed,this.random);this.missed=[];this.index=0;if(this.queue.length)this.round++;}
+      if(this.index===this.queue.length){this.queue=this.randomOrder?shuffle(this.missed,this.random):[...this.missed];this.missed=[];this.index=0;if(this.queue.length)this.round++;}
     }
   }
   const api={shuffle,selectWords,normalize,isCorrect,Session};

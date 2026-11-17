@@ -8,7 +8,7 @@
   const t=(key,values)=>translate(lang,key,values);
   const favorites=new favoritesAPI.FavoriteStore(storage,words.map(w=>w.id));
   let lesson='all',session=null,flipped=false,checked=false,hiddenPrompt=false,composing=false;
-  let activeMode='cards',activeDirection='english',activePrompt='japanese',feedbackKey='',favoriteMessage='';
+  let activeMode='cards',activeDirection='english',activePrompt='english',feedbackKey='',favoriteMessage='';
   let client=null,availability='notConfigured',accountMessage='',authBusy=false,recovery=false,authUserId=null,authGeneration=0;
   let cardAnimations=[],outgoingCard=null,gesture=null,suppressClick=false;
   const folderButtons=[];
@@ -28,7 +28,7 @@
   function resetSelection(){
     clearCardMotion();
     session=null;feedbackKey='';$('exercise').hidden=true;$('complete').hidden=true;
-    $('direction-wrap').hidden=$('mode').value!=='cards';$('prompt-wrap').hidden=$('mode').value!=='spelling';
+    $('direction-wrap').hidden=$('mode').value!=='cards';
     paintList();paintStudy();
   }
   function updateTypes(reset=true){
@@ -83,7 +83,7 @@
     const exit=old.animate([{transform:'translateX(0)',opacity:1},{transform:`translateX(${-direction*18}%)`,opacity:0}],{...options,fill:'forwards'});
     const enter=card.animate([{transform:`translateX(${direction*18}%)`,opacity:0},{transform:'translateX(0)',opacity:1}],options);cardAnimations=[exit,enter];exit.finished.then(()=>{old.remove();if(outgoingCard===old)outgoingCard=null;}).catch(()=>{});
   }
-  function start(){const list=selected();if(!list.length||$('start').disabled)return;clearCardMotion();session=new Session(list);activeMode=$('mode').value;activeDirection=$('direction').value;activePrompt=$('prompt').value;renderNewWord();}
+  function start(){const list=selected();if(!list.length||$('start').disabled)return;clearCardMotion();session=new Session(list,Math.random,$('order').value==='random');activeMode=$('mode').value;activeDirection=$('direction').value;activePrompt='english';renderNewWord();}
   function grade(known){if(!session||session.done)return;changeCard(()=>session.grade(known),known?1:-1);}
   function navigateCard(direction){if(!session||session.done||activeMode!=='cards'||session.queue.length-session.index<2)return;changeCard(()=>session.navigate(direction),direction);}
   function paintAccount(){
@@ -105,7 +105,7 @@
   favorites.changed=()=>{paintList();paintStudy();paintAccount();};
   $('language').addEventListener('click',()=>{lang=lang==='zh'?'en':'zh';try{storage.setItem(languageKey,lang);}catch{}paintLanguage();});
   $('start').addEventListener('click',start);$('again').addEventListener('click',start);$('pos').addEventListener('change',()=>updateTypes());
-  ['subtype','mode','direction','prompt','only-favorites'].forEach(id=>$(id).addEventListener('change',resetSelection));
+  ['subtype','mode','direction','order','only-favorites'].forEach(id=>$(id).addEventListener('change',resetSelection));
   $('favorite-word').addEventListener('click',()=>{if(session&&!session.done)toggleFavorite(session.current.id);});
   $('flashcard').addEventListener('click',()=>{if(suppressClick){suppressClick=false;return;}if(session&&!session.done){flipped=!flipped;paintStudy();}});
   $('previous-card').addEventListener('click',()=>navigateCard(-1));$('next-card').addEventListener('click',()=>navigateCard(1));
