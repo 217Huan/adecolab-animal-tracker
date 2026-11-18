@@ -6,6 +6,11 @@
   let storage;try{storage=localStorage;}catch{storage={getItem:()=>null,setItem:()=>{throw Error('Storage unavailable');}};}
   let lang;try{lang=storage.getItem(languageKey);}catch{}if(!['zh','en'].includes(lang))lang=navigator.language.toLowerCase().startsWith('zh')?'zh':'en';
   const t=(key,values)=>translate(lang,key,values);
+  let studyTheme;try{studyTheme=storage.getItem('adecolab.studyTheme');}catch{}
+  if(!['light','dark'].includes(studyTheme))studyTheme=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+  function paintTheme(){document.documentElement.dataset.theme=studyTheme;$('study-theme').textContent=t(studyTheme==='dark'?'lightMode':'darkMode');$('study-theme').setAttribute('aria-label',t(studyTheme==='dark'?'lightMode':'darkMode'));}
+  $('study-theme').addEventListener('click',()=>{studyTheme=studyTheme==='dark'?'light':'dark';try{storage.setItem('adecolab.studyTheme',studyTheme);}catch{}paintTheme();});
+
   const favorites=new favoritesAPI.FavoriteStore(storage,words.map(w=>w.id));
   let lesson='all',session=null,flipped=false,checked=false,hiddenPrompt=false,composing=false;
   let activeMode='cards',activeDirection='english',activePrompt='english',feedbackKey='',favoriteMessage='';
@@ -116,7 +121,7 @@
     $('account-message').textContent=authBusy?t('working'):accountMessage?t(accountMessage):'';
   }
   function paintLanguage(){
-    document.documentElement.lang=lang==='zh'?'zh-CN':'en';document.title=t('pageTitle');
+    document.documentElement.lang=lang==='zh'?'zh-CN':'en';document.title=t('pageTitle');paintTheme();
     document.querySelectorAll('[data-text]').forEach(el=>{el.textContent=t(el.dataset.text);});
     document.querySelectorAll('[data-label]').forEach(el=>{el.setAttribute('aria-label',t(el.dataset.label));});
     $('lesson-header').textContent=lang==='zh'?'单元':'Lesson';$('language').textContent=lang==='zh'?'English':'中文';$('language').setAttribute('aria-label',lang==='zh'?'Switch to English':'切换为中文');

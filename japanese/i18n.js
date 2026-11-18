@@ -20,6 +20,8 @@
   pairs.removeGroup=['移除这组词汇','Remove this group'];
   pairs.liveAnswer=['你的答案 · 实时预览','Your answer · live preview'];
   pairs.correctAnswer=['正确答案','Correct answer'];
+  pairs.lightMode=['浅色模式','Light mode'];
+  pairs.darkMode=['深色模式','Dark mode'];
   pairs.order=['抽测顺序','Study order'];
   pairs.randomOrder=['随机打乱','Shuffle'];
   pairs.listOrder=['按词汇列表顺序','Word list order'];

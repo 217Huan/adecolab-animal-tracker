@@ -18,6 +18,11 @@ main{padding:32px;gap:24px}.top{padding:12px 4px 18px}.top h1{font-size:clamp(1.
 @media(max-width:760px){main{padding:16px;gap:16px}.card{padding:18px;border-radius:20px}.top{padding:8px 2px}.toolbar-group{gap:8px}.btn,.filebtn{padding:0 12px}}
 @media(prefers-reduced-motion:reduce){.btn,.filebtn{transition:none;transform:none!important}}
 @media(prefers-reduced-transparency:reduce){.card,.theme,.btn-secondary{backdrop-filter:none;background:var(--bg)}}
+select,select::picker(select){appearance:base-select}
+.field select{font:inherit;color:var(--text);min-height:44px;padding:10px 14px;border:1px solid var(--border);border-radius:14px;background:var(--surface2);backdrop-filter:blur(20px);width:100%}
+select::picker(select){padding:7px;border-radius:16px;border:1px solid var(--border);color:var(--text);background:var(--surface);backdrop-filter:blur(24px) saturate(140%);box-shadow:0 12px 32px rgba(0,0,0,.18)}
+select option{padding:10px 12px;border-radius:10px}select option:checked{background:var(--offset);color:var(--primary)}
+[data-theme="dark"] select{color-scheme:dark}
 </style></head>
 <body>
   <main>
