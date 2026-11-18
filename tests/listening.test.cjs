@@ -6,10 +6,10 @@ test('listening playback, speed, subtitles, errors and navigation preserve study
  const context=vm.createContext({$,document,lang:'en',Option:function(text,value){this.text=text;this.value=value;},encodeURIComponent,paintFolders:()=>{}});
  const source=fs.readFileSync('japanese/app.js','utf8');vm.runInContext(source.slice(source.indexOf('  let listeningActive=false;'),source.indexOf('  const verbMode=')),context);
  vm.runInContext('paintListening();loadListening();',context);
- assert.match($('listening-audio').src,/01-08/);
+ assert.match($('listening-audio').src,/03-07/);
  $('listening-tab').events.click();assert.equal($('listening-panel').hidden,false);assert.ok(classes.has('listening-view'));
  $('listening-speed').value='.75';$('listening-speed').events.change();assert.equal($('listening-audio').playbackRate,.75);
- $('listening-clip').value='3';$('listening-clip').events.change();assert.match($('listening-audio').src,/01-17/);assert.match($('listening-ja').textContent,/おやすみなさい/);assert.equal($('listening-audio').playbackRate,.75);
+ $('listening-clip').value='1';$('listening-clip').events.change();assert.match($('listening-audio').src,/04-08/);assert.match($('listening-ja').textContent,/にじゅうごさい/);assert.equal($('listening-audio').playbackRate,.75);
  $('listening-subtitles').checked=true;$('listening-subtitles').events.change();assert.equal($('listening-transcript').hidden,false);
  $('listening-audio').events.error();assert.equal($('listening-error').hidden,false);
  $('listening-replay').events.click();assert.equal($('listening-audio').currentTime,0);

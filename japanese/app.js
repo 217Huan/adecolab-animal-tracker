@@ -19,16 +19,45 @@
   const folderButtons=[],customGroups=[];
   let listeningActive=false;
   const listeningClips=[
-    {file:'X_[01-08]_hanasu2.mp3',zh:'你好 · 白天问候',en:'Hello · daytime greeting',ja:'こんにちは。\nこんにちは。',translation:{zh:'你好。\n你好。',en:'Hello.\nHello.'}},
-    {file:'X_[01-09]_hanasu3.mp3',zh:'晚上好',en:'Good evening',ja:'こんばんは。\nこんばんは。',translation:{zh:'晚上好。\n晚上好。',en:'Good evening.\nGood evening.'}},
-    {file:'X_[01-14]_hanasu1-1.mp3',zh:'再见 · 回头见',en:'See you later',ja:'じゃあ、また。\nじゃあ、また。',translation:{zh:'那么，回头见。\n回头见。',en:'See you later.\nSee you later.'}},
-    {file:'X_[01-17]_hanasu3.mp3',zh:'晚安',en:'Good night',ja:'おやすみなさい。\nおやすみなさい。',translation:{zh:'晚安。\n晚安。',en:'Good night.\nGood night.'}}
-  ];
+  {
+    "lesson": "03",
+    "file": "X_[03-07]_kaiwa.mp3",
+    "zh": "交流会：姓名与国籍 · 60秒",
+    "en": "At a gathering: names and countries · 60s",
+    "ja": "かねこ：こんにちは。かねこです。\nチャン・ハイ・ケマラ：こんにちは。\nかねこ：おなまえは？\nチャン：チャンです。\nハイ：わたしはハイです。\nケマラ：ケマラです。\nかねこ：えーと、チャンさん、ハイさん、ケマラさん……。ごしゅっしんは？\nチャン：ベトナムです。ハノイからきました。\nかねこ：そうですか。ハイさんは？ おくには？\nハイ：わたしもベトナムです。\nかねこ：ベトナムの、どちらからですか？\nハイ：フエです。\nかねこ：そうですか。ケマラさんも、ベトナムからですか？\nケマラ：いいえ。ベトナムじゃないです。わたしはカンボジアからきました。\nかねこ：そうですか。みなさんは、ともだちですか？\nケマラ：はい。おなじかいしゃです。",
+    "translation": {
+      "zh": "金子：你好，我是金子。\n三人：你好。\n金子：你们叫什么名字？\nTrang：我是Trang。\nHai：我是Hai。\nKhemera：我是Khemera。\n金子：嗯，Trang、Hai、Khemera……你们来自哪里？\nTrang：越南，来自河内。\n金子：这样啊。Hai呢？来自哪个国家？\nHai：我也来自越南。\n金子：越南的哪里？\nHai：顺化。\n金子：这样啊。Khemera也来自越南吗？\nKhemera：不是，我不是越南人。我来自柬埔寨。\n金子：这样啊。你们是朋友吗？\nKhemera：是的，我们在同一家公司。",
+      "en": "Kaneko: Hello, I’m Kaneko.\nAll three: Hello.\nKaneko: Your names?\nTrang: Trang.\nHai: I’m Hai.\nKhemera: Khemera.\nKaneko: Um, Trang, Hai, Khemera… Where are you from?\nTrang: Vietnam. I came from Hanoi.\nKaneko: I see. Hai, your country?\nHai: I’m also from Vietnam.\nKaneko: Where in Vietnam?\nHai: Hue.\nKaneko: I see. Khemera, are you also from Vietnam?\nKhemera: No, not Vietnam. I came from Cambodia.\nKaneko: I see. Are you all friends?\nKhemera: Yes. Same company."
+    }
+  },
+  {
+    "lesson": "04",
+    "file": "X_[04-08]_kaiwa.mp3",
+    "zh": "拜访同事家：家人、年龄和住址 · 59秒",
+    "en": "Visiting a coworker: family, age and home · 59s",
+    "ja": "ミロ：ミロです。フィリピンからきました。よろしくおねがいします。\nうえだ：ミロさん、うちのかぞくです。つまとこども。それから、ちちです。\nうえだのつま・ちち：ミロさん、よろしく。\nミロ：あのう、おなまえは？\nこども：しんいちです。\nミロ：しんいち。なんさいですか？\nこども：……。\nうえだのつま：いくつですか？\nこども：よんさいです。\nミロ：よんさい。そうですか。\nうえだのちち：ミロさんは、なんさい？\nミロ：にじゅうごさいです。\nうえだのちち：そう。\nうえだのつま：どこにすんでいますか？\nミロ：あかばねです。\nうえだのつま：そうですか。ごかぞくは？\nミロ：かぞくは、フィリピンにすんでいます。\nうえだのつま：そうですか。",
+    "translation": {
+      "zh": "Miro：我是Miro，来自菲律宾。请多关照。\n上田：Miro，这是我的家人：妻子、孩子，还有父亲。\n妻子和父亲：Miro，请多关照。\nMiro：那个，你叫什么名字？\n孩子：伸一。\nMiro：伸一，你几岁？\n孩子：……\n妻子：你几岁啦？\n孩子：四岁。\nMiro：四岁啊。\n父亲：Miro，你几岁？\nMiro：二十五岁。\n父亲：这样啊。\n妻子：你住在哪里？\nMiro：赤羽。\n妻子：这样啊。你的家人呢？\nMiro：我的家人住在菲律宾。\n妻子：这样啊。",
+      "en": "Miro: I’m Miro, from the Philippines. Nice to meet you.\nUeda: Miro, this is my family: my wife, child, and father.\nWife and father: Nice to meet you, Miro.\nMiro: Um, your name?\nChild: Shinichi.\nMiro: Shinichi. How old are you?\nChild: …\nWife: How old are you?\nChild: Four.\nMiro: Four, I see.\nFather: Miro, how old are you?\nMiro: Twenty-five.\nFather: I see.\nWife: Where do you live?\nMiro: Akabane.\nWife: I see. Your family?\nMiro: My family lives in the Philippines.\nWife: I see."
+    }
+  },
+  {
+    "lesson": "09",
+    "file": "X_[09-03]_kiku1.mp3",
+    "zh": "日常作息：起床、慢跑和睡觉 · 33秒",
+    "en": "Daily routine: waking up, jogging and bedtime · 33s",
+    "ja": "むらかみ：おはようございます。\nパウロ・やまかわ：おはようございます。\nむらかみ：パウロさんも、やまかわさんも、まいにち、はやいですね。パウロさん、あさ、なんじにおきますか？\nパウロ：ごじにおきます。\nやまかわ：ごじ！ はやいですね。\nパウロ：ええ。まいあさ、ジョギングをします。よるは、じゅうじはんにねます。\nむらかみ：そうですか。",
+    "translation": {
+      "zh": "村上：早上好。\nPaulo、山川：早上好。\n村上：Paulo和山川每天都很早啊。Paulo，你早上几点起床？\nPaulo：五点起床。\n山川：五点！真早啊。\nPaulo：是的。我每天早上慢跑。晚上十点半睡觉。\n村上：这样啊。",
+      "en": "Murakami: Good morning.\nPaulo and Yamakawa: Good morning.\nMurakami: You’re both early every day. Paulo, what time do you get up?\nPaulo: At five.\nYamakawa: Five! That’s early.\nPaulo: Yes. I jog every morning. At night, I go to bed at ten thirty.\nMurakami: I see."
+    }
+  }
+];
   function paintListening(){
     const value=$('listening-clip').value||'0';$('listening-clip').replaceChildren(...listeningClips.map((clip,i)=>new Option((i+1)+'. '+clip[lang],String(i))));$('listening-clip').value=value;
-    const clip=listeningClips[Number(value)];$('listening-name').textContent=clip[lang];$('listening-ja').textContent=clip.ja;$('listening-translation').textContent=clip.translation[lang];
+    const clip=listeningClips[Number(value)];$('listening-name').textContent=clip[lang];$('listening-ja').textContent=clip.ja;$('listening-translation').textContent=clip.translation[lang];$('listening-source').href='https://www.irodori.jpf.go.jp/starter/audio/lesson'+clip.lesson+'.html';$('listening-script-source').href='https://www.irodori.jpf.go.jp/assets/data/starter/pdf/X_L'+clip.lesson+'.pdf';
   }
-  function loadListening(){const clip=listeningClips[Number($('listening-clip').value)||0];$('listening-audio').pause();$('listening-audio').src='https://www.irodori.jpf.go.jp/assets/data/starter/audio/01/'+encodeURIComponent(clip.file);$('listening-audio').playbackRate=Number($('listening-speed').value);$('listening-error').hidden=true;paintListening();}
+  function loadListening(){const clip=listeningClips[Number($('listening-clip').value)||0];$('listening-audio').pause();$('listening-audio').src='https://www.irodori.jpf.go.jp/assets/data/starter/audio/'+clip.lesson+'/'+encodeURIComponent(clip.file);$('listening-audio').playbackRate=Number($('listening-speed').value);$('listening-error').hidden=true;paintListening();}
   function showListening(show){listeningActive=show;$('listening-panel').hidden=!show;document.querySelector('.workspace').classList.toggle('listening-view',show);$('listening-tab').setAttribute('aria-pressed',String(show));if(!show)$('listening-audio').pause();paintFolders();}
   $('listening-tab').addEventListener('click',()=>showListening(true));
   $('listening-clip').addEventListener('change',loadListening);

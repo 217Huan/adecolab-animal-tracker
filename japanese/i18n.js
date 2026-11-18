@@ -23,12 +23,13 @@
   pairs.lightMode=['浅色模式','Light mode'];
   pairs.darkMode=['深色模式','Dark mode'];
   pairs.listeningTitle=['♫ 听力练习','♫ Listening practice'];
-  pairs.listeningIntro=['从简短的问候和告别开始。音频来自《いろどり》入门第1课，属于额外的初学者材料，并非 GENKI 课本音频。','Start with short greetings and goodbyes from Irodori Starter Lesson 1. These are supplementary beginner materials, not GENKI recordings.'];
+  pairs.listeningIntro=['完整的多人情景对话，约33–60秒：姓名国籍、拜访家人和日常作息。难度参考 GENKI 第1–8单元；录音来自《いろどり》，并非 GENKI 原音。字幕转写为假名。','Multi-turn conversations, about 33–60 seconds: names and countries, visiting family, and daily routines. Selected for a level similar to GENKI Lessons 1–8; recordings are from Irodori, not GENKI. Japanese transcripts use kana.'];
+  pairs.listeningScriptSource=['官方课文脚本','Official lesson script'];
   pairs.listeningClip=['选择音频','Choose a clip'];
   pairs.listeningSpeed=['播放速度','Playback speed'];
   pairs.listeningReplay=['↻ 从头重播','↻ Replay from start'];
   pairs.listeningSubtitles=['显示日语字幕和翻译','Show Japanese transcript and translation'];
-  pairs.listeningTip=['先隐藏字幕听一遍，再打开核对，最后跟读。字幕展示整段短对话，不逐字滚动。','Listen first with the transcript hidden, reveal it to check, then shadow the speakers. The transcript shows the full short exchange, without word-by-word highlighting.'];
+  pairs.listeningTip=['先隐藏字幕听一遍，再打开核对，最后跟读。字幕展示整段对话，不逐字滚动。','Listen first with the transcript hidden, reveal it to check, then shadow the speakers. The transcript shows the full conversation, without word-by-word highlighting.'];
   pairs.listeningError=['音频暂时无法播放，请检查网络，或使用下方官方来源链接。','Audio could not play. Check your connection or open the official source below.'];
   pairs.listeningSource=['官方音频与课文','Official audio and lesson'];
   pairs.listeningTerms=['使用说明','Usage guidelines'];
