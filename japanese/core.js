@@ -7,6 +7,7 @@
   function selectWords(words,lesson='all',pos='all',type='all'){
     return words.filter(w=>(lesson==='all'||w.lesson===Number(lesson))&&(pos==='all'||w.pos===pos)&&(type==='all'||w.type===type));
   }
+  function combineGroups(words,groups){return words.filter(w=>groups.some(g=>(g.lesson==='all'||w.lesson===Number(g.lesson))&&(g.pos==='all'||w.pos===g.pos)&&(g.type==='all'||w.type===g.type)));}
   function normalize(text){return String(text).normalize('NFKC').replace(/[\s　]/gu,'').trim();}
   function isCorrect(word,answer){const value=normalize(answer);return !!value&&word.answers.some(a=>normalize(a)===value);}
   function teForm(word){
@@ -41,6 +42,6 @@
       if(this.index===this.queue.length){this.queue=this.randomOrder?shuffle(this.missed,this.random):[...this.missed];this.missed=[];this.index=0;if(this.queue.length)this.round++;}
     }
   }
-  const api={shuffle,selectWords,normalize,isCorrect,teForm,matchesVerbPractice,Session};
+  const api={shuffle,selectWords,combineGroups,normalize,isCorrect,teForm,matchesVerbPractice,Session};
   if(typeof module!=='undefined')module.exports=api;else root.JapaneseCore=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -190,3 +190,5 @@ footer { color: var(--muted); font-size: .67rem; margin: 28px 0 0 254px; line-he
   header, .panel, .library { background: #fff; backdrop-filter: none; }
   .panel { border-color: #bfc2d3; }
 }
+
+.custom-builder{margin-top:16px;padding:16px;border:1px solid var(--line);border-radius:16px;background:#ffffff80}.custom-toolbar{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.custom-toolbar button{font-size:.78rem}.custom-groups{display:flex;gap:8px;flex-wrap:wrap}.custom-groups button{font-size:.72rem;background:var(--accent-soft);color:var(--accent);padding:7px 12px;border-radius:24px}

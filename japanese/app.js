@@ -11,10 +11,10 @@
   let activeMode='cards',activeDirection='english',activePrompt='english',feedbackKey='',favoriteMessage='';
   let client=null,availability='notConfigured',accountMessage='',authBusy=false,recovery=false,authUserId=null,authGeneration=0;
   let cardAnimations=[],outgoingCard=null,gesture=null,suppressClick=false;
-  const folderButtons=[];
+  const folderButtons=[],customGroups=[];
   const verbMode=()=>['te','verbType'].includes($('mode').value);
-  const selected=()=>selectWords(words,lesson,verbMode()?'verb':$('pos').value,verbMode()?'all':$('subtype').value).filter(w=>(!verbMode()||JapaneseCore.matchesVerbPractice(w,$('mode').value))&&(!$('only-favorites').checked||favorites.ids.has(w.id)));
-  const folderTitle=()=>lesson==='all'?t('allLessons'):`${t('lesson',{n:lesson})} · ${lessons[Number(lesson)-1]}`;
+  const selected=()=>($('use-groups').checked?JapaneseCore.combineGroups(words,customGroups):selectWords(words,lesson,verbMode()?'verb':$('pos').value,verbMode()?'all':$('subtype').value)).filter(w=>(!verbMode()||JapaneseCore.matchesVerbPractice(w,$('mode').value))&&(!$('only-favorites').checked||favorites.ids.has(w.id)));
+  const folderTitle=()=>$('use-groups').checked?t('customTitle'):lesson==='all'?t('allLessons'):`${t('lesson',{n:lesson})} · ${lessons[Number(lesson)-1]}`;
   function textCell(row,value,ja=false){const cell=document.createElement('td');cell.textContent=value;if(ja)cell.lang='ja';row.append(cell);return cell;}
   function favoriteButton(button,w,short=false){const saved=favorites.ids.has(w.id);button.textContent=short?(saved?'★':'☆'):t(saved?'saved':'save');button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',t(saved?'removeLabel':'saveLabel',{word:w.kana}));button.disabled=favorites.loading||favorites.saving||favorites.loadFailed;}
   async function toggleFavorite(id){favoriteMessage='';try{await favorites.toggle(id);}catch{favoriteMessage='saveError';}$('favorite-message').textContent=favoriteMessage?t(favoriteMessage):'';}
@@ -31,8 +31,13 @@
     session=null;feedbackKey='';$('exercise').hidden=true;$('complete').hidden=true;
     $('direction-wrap').hidden=$('mode').value!=='cards';
     for(const id of ['pos','subtype'])$(id).closest('label').hidden=verbMode();
-    paintList();paintStudy();
+    paintGroups();paintList();paintStudy();
   }
+  function paintGroups(){
+    $('custom-groups').replaceChildren();customGroups.forEach((group,index)=>{const button=document.createElement('button');button.type='button';button.textContent=`${group.lesson==='all'?t('allLessons'):t('lesson',{n:group.lesson})} · ${group.pos==='all'?t('allTypes'):t(group.pos)} · ${group.type==='all'?t('allCategories'):typeName(group.type,lang)} ×`;button.setAttribute('aria-label',button.textContent+' · '+t('removeGroup'));button.addEventListener('click',()=>{customGroups.splice(index,1);resetSelection();});$('custom-groups').append(button);});
+  }
+  $('add-group').addEventListener('click',()=>{const group={lesson,pos:verbMode()?'verb':$('pos').value,type:verbMode()?'all':$('subtype').value};if(!customGroups.some(g=>JSON.stringify(g)===JSON.stringify(group)))customGroups.push(group);resetSelection();});
+  $('use-groups').addEventListener('change',resetSelection);
   function updateTypes(reset=true){
     const current=$('subtype').value,types=[...new Set(selectWords(words,lesson,$('pos').value).map(w=>w.type))];
     $('subtype').replaceChildren(new Option(t('allCategories'),'all'),...types.map(type=>new Option(typeName(type,lang),type)));
@@ -106,7 +111,7 @@
     document.querySelectorAll('[data-text]').forEach(el=>{el.textContent=t(el.dataset.text);});
     document.querySelectorAll('[data-label]').forEach(el=>{el.setAttribute('aria-label',t(el.dataset.label));});
     $('lesson-header').textContent=lang==='zh'?'单元':'Lesson';$('language').textContent=lang==='zh'?'English':'中文';$('language').setAttribute('aria-label',lang==='zh'?'Switch to English':'切换为中文');
-    $('answer').placeholder=t('placeholder');$('folders').setAttribute('aria-label',t('folders'));$('progress').setAttribute('aria-label',t('progress'));paintFolders();updateTypes(false);paintList();paintStudy();paintAccount();$('favorite-message').textContent=favoriteMessage?t(favoriteMessage):'';
+    $('answer').placeholder=t('placeholder');$('folders').setAttribute('aria-label',t('folders'));$('progress').setAttribute('aria-label',t('progress'));paintFolders();paintGroups();updateTypes(false);paintList();paintStudy();paintAccount();$('favorite-message').textContent=favoriteMessage?t(favoriteMessage):'';
   }
   favorites.changed=()=>{paintList();paintStudy();paintAccount();};
   $('language').addEventListener('click',()=>{lang=lang==='zh'?'en':'zh';try{storage.setItem(languageKey,lang);}catch{}paintLanguage();});

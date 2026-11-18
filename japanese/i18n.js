@@ -13,6 +13,11 @@
   pairs.tePrompt=['写出这个动词的て形','Write the te-form of this verb'];
   pairs.typePrompt=['选择动词类别','Choose the verb type'];
   pairs.verbReview=['正确答案：{word}。下一轮再练。','Correct answer: {word}. Try again next round.'];
+  pairs.addGroup=['＋ 将当前范围加入自选词表','＋ Add current selection to custom set'];
+  pairs.useGroups=['使用自选词表','Use custom set'];
+  pairs.groupHelp=['选择左侧单元及练习设置中的词性／分类，点击加入；可合并多组词汇。勾选后使用合并词表，抽测顺序仍可选随机。词表仅保留在本次页面中。','Choose a lesson and word type/category, then add it. Combine multiple groups and enable the custom set to study them together. Choose Shuffle in settings for random order. This set lasts for this page session.'];
+  pairs.customTitle=['自选词表','Custom study set'];
+  pairs.removeGroup=['移除这组词汇','Remove this group'];
   pairs.order=['抽测顺序','Study order'];
   pairs.randomOrder=['随机打乱','Shuffle'];
   pairs.listOrder=['按词汇列表顺序','Word list order'];
