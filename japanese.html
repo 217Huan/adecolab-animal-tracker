@@ -13,13 +13,21 @@
   <main>
     <section class="intro"><p class="eyebrow">GENKI I · THIRD EDITION · LESSONS 01–08</p><h1><span class="headline" data-text="headline">A few more words, every day.</span><span lang="ja">ことばを、ひとつずつ。</span></h1><p data-text="intro"></p></section>
     <div class="layout">
-      <aside class="panel library"><h2 data-text="folders"></h2><nav id="folders"></nav><p class="aside-note" data-text="folderHelp"></p>
+      <aside class="panel library"><h2 data-text="folders"></h2><nav id="folders"></nav><button id="listening-tab" class="listening-tab" type="button" aria-pressed="false" data-text="listeningTitle"></button><p class="aside-note" data-text="folderHelp"></p>
         <details class="account-panel"><summary data-text="account"></summary><p id="account-status" class="muted" aria-live="polite"></p><p id="account-availability" class="muted"></p>
           <form id="account-form" hidden><label for="email" data-text="email"></label><input id="email" type="email" required autocomplete="username" maxlength="254"><label for="password" data-text="password"></label><input id="password" type="password" required minlength="8" autocomplete="current-password" maxlength="128"><div class="auth-actions"><button id="login" type="submit" class="primary" data-text="login"></button><button id="signup" type="button" data-text="signup"></button><button id="forgot" type="button" data-text="forgot"></button><button id="update-password" type="button" hidden data-text="updatePassword"></button></div></form>
           <button id="logout" hidden data-text="logout"></button><button id="retry-sync" hidden data-text="retry"></button><p id="account-message" role="status" class="muted"></p><p class="muted" data-text="accountHelp"></p>
         </details>
       </aside>
       <div class="workspace">
+        <section id="listening-panel" class="panel listening-panel" hidden>
+          <p class="eyebrow">IRODORI · STARTER A1</p><h2 data-text="listeningTitle"></h2><p class="muted" data-text="listeningIntro"></p>
+          <div class="filter-row"><label><span data-text="listeningClip"></span><select id="listening-clip"></select></label><label><span data-text="listeningSpeed"></span><select id="listening-speed"><option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option></select></label></div>
+          <div class="listening-player"><h3 id="listening-name"></h3><audio id="listening-audio" controls preload="none"></audio><p id="listening-error" role="status" class="muted" hidden data-text="listeningError"></p><button id="listening-replay" type="button" data-text="listeningReplay"></button></div>
+          <label class="favorite-filter"><input id="listening-subtitles" type="checkbox"><span data-text="listeningSubtitles"></span></label>
+          <div id="listening-transcript" class="listening-transcript" hidden><p id="listening-ja" lang="ja"></p><p id="listening-translation" class="muted"></p></div>
+          <p class="muted" data-text="listeningTip"></p><p class="muted">© The Japan Foundation Japanese-Language Institute, Urawa · <a href="https://www.irodori.jpf.go.jp/starter/audio/lesson01.html" target="_blank" rel="noopener" data-text="listeningSource"></a> · <a href="https://www.irodori.jpf.go.jp/en/privacy.html" target="_blank" rel="noopener" data-text="listeningTerms"></a></p>
+        </section>
         <section class="panel filters">
           <div class="setup-bar"><label class="mode-picker"><span data-text="mode"></span><select id="mode"><option value="cards" data-text="cards"></option><option value="spelling" data-text="spelling"></option><option value="te" data-text="teMode"></option><option value="verbType" data-text="verbTypeMode"></option></select></label><span id="count" class="muted"></span><button id="start" class="primary" data-text="start"></button></div>
           <div class="selection-bar"><label class="favorite-filter"><input id="only-favorites" type="checkbox"><span data-text="onlyFavorites"></span><span id="favorite-count" class="badge"></span></label>

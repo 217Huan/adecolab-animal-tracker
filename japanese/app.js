@@ -17,6 +17,27 @@
   let client=null,availability='notConfigured',accountMessage='',authBusy=false,recovery=false,authUserId=null,authGeneration=0;
   let cardAnimations=[],outgoingCard=null,gesture=null,suppressClick=false;
   const folderButtons=[],customGroups=[];
+  let listeningActive=false;
+  const listeningClips=[
+    {file:'X_[01-08]_hanasu2.mp3',zh:'你好 · 白天问候',en:'Hello · daytime greeting',ja:'こんにちは。\nこんにちは。',translation:{zh:'你好。\n你好。',en:'Hello.\nHello.'}},
+    {file:'X_[01-09]_hanasu3.mp3',zh:'晚上好',en:'Good evening',ja:'こんばんは。\nこんばんは。',translation:{zh:'晚上好。\n晚上好。',en:'Good evening.\nGood evening.'}},
+    {file:'X_[01-14]_hanasu1-1.mp3',zh:'再见 · 回头见',en:'See you later',ja:'じゃあ、また。\nじゃあ、また。',translation:{zh:'那么，回头见。\n回头见。',en:'See you later.\nSee you later.'}},
+    {file:'X_[01-17]_hanasu3.mp3',zh:'晚安',en:'Good night',ja:'おやすみなさい。\nおやすみなさい。',translation:{zh:'晚安。\n晚安。',en:'Good night.\nGood night.'}}
+  ];
+  function paintListening(){
+    const value=$('listening-clip').value||'0';$('listening-clip').replaceChildren(...listeningClips.map((clip,i)=>new Option((i+1)+'. '+clip[lang],String(i))));$('listening-clip').value=value;
+    const clip=listeningClips[Number(value)];$('listening-name').textContent=clip[lang];$('listening-ja').textContent=clip.ja;$('listening-translation').textContent=clip.translation[lang];
+  }
+  function loadListening(){const clip=listeningClips[Number($('listening-clip').value)||0];$('listening-audio').pause();$('listening-audio').src='https://www.irodori.jpf.go.jp/assets/data/starter/audio/01/'+encodeURIComponent(clip.file);$('listening-audio').playbackRate=Number($('listening-speed').value);$('listening-error').hidden=true;paintListening();}
+  function showListening(show){listeningActive=show;$('listening-panel').hidden=!show;document.querySelector('.workspace').classList.toggle('listening-view',show);$('listening-tab').setAttribute('aria-pressed',String(show));if(!show)$('listening-audio').pause();paintFolders();}
+  $('listening-tab').addEventListener('click',()=>showListening(true));
+  $('listening-clip').addEventListener('change',loadListening);
+  $('listening-speed').addEventListener('change',()=>{$('listening-audio').playbackRate=Number($('listening-speed').value);});
+  $('listening-audio').addEventListener('loadedmetadata',()=>{$('listening-audio').playbackRate=Number($('listening-speed').value);});
+  $('listening-audio').addEventListener('error',()=>{$('listening-error').hidden=false;});
+  $('listening-subtitles').addEventListener('change',()=>{$('listening-transcript').hidden=!$('listening-subtitles').checked;});
+  $('listening-replay').addEventListener('click',()=>{const audio=$('listening-audio');audio.currentTime=0;audio.play().catch(()=>{$('listening-error').hidden=false;});});
+
   const verbMode=()=>['te','verbType'].includes($('mode').value);
   const selected=()=>($('use-groups').checked?JapaneseCore.combineGroups(words,customGroups):selectWords(words,lesson,verbMode()?'verb':$('pos').value,verbMode()?'all':$('subtype').value)).filter(w=>(!verbMode()||JapaneseCore.matchesVerbPractice(w,$('mode').value))&&(!$('only-favorites').checked||favorites.ids.has(w.id)));
   const folderTitle=()=>$('use-groups').checked?t('customTitle'):lesson==='all'?t('allLessons'):`${t('lesson',{n:lesson})} · ${lessons[Number(lesson)-1]}`;
@@ -51,9 +72,9 @@
   ['all',1,2,3,4,5,6,7,8].forEach(value=>{
     const button=document.createElement('button');button.type='button';button.dataset.lesson=value;
     const title=document.createElement('span'),sub=document.createElement('small');button.append(title,sub);folderButtons.push({value,button,title,sub});
-    button.addEventListener('click',()=>{lesson=value;paintFolders();updateTypes();});$('folders').append(button);
+    button.addEventListener('click',()=>{showListening(false);lesson=value;paintFolders();updateTypes();});$('folders').append(button);
   });
-  function paintFolders(){for(const {value,button,title,sub} of folderButtons){title.textContent=value==='all'?t('allLessons'):t('lesson',{n:value});sub.textContent=value==='all'?t('total',{n:words.length}):lessons[value-1];button.classList.toggle('active',lesson===value);button.setAttribute('aria-pressed',String(lesson===value));}}
+  function paintFolders(){for(const {value,button,title,sub} of folderButtons){title.textContent=value==='all'?t('allLessons'):t('lesson',{n:value});sub.textContent=value==='all'?t('total',{n:words.length}):lessons[value-1];button.classList.toggle('active',!listeningActive&&lesson===value);button.setAttribute('aria-pressed',String(!listeningActive&&lesson===value));}}
   function paintStudy(){
     $('deck-title').textContent=folderTitle();$('settings-note').textContent=t(session?'running':'choose');
     $('round').textContent=session?t('round',{n:session.round}):t('ready');
@@ -121,7 +142,7 @@
     $('account-message').textContent=authBusy?t('working'):accountMessage?t(accountMessage):'';
   }
   function paintLanguage(){
-    document.documentElement.lang=lang==='zh'?'zh-CN':'en';document.title=t('pageTitle');paintTheme();
+    paintListening();document.documentElement.lang=lang==='zh'?'zh-CN':'en';document.title=t('pageTitle');paintTheme();
     document.querySelectorAll('[data-text]').forEach(el=>{el.textContent=t(el.dataset.text);});
     document.querySelectorAll('[data-label]').forEach(el=>{el.setAttribute('aria-label',t(el.dataset.label));});
     $('lesson-header').textContent=lang==='zh'?'单元':'Lesson';$('language').textContent=lang==='zh'?'English':'中文';$('language').setAttribute('aria-label',lang==='zh'?'Switch to English':'切换为中文');
@@ -200,5 +221,5 @@
       const {data,error}=await client.auth.getSession();if(error)throw error;await syncUser(data.session?.user||null);paintAccount();
     }catch{subscription?.unsubscribe();client=null;await syncUser(null);availability='authUnavailable';paintAccount();}
   }
-  paintLanguage();initializeAccount();
+  paintLanguage();loadListening();initializeAccount();
 })();
