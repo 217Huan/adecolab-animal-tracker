@@ -36,7 +36,7 @@
             <div id="card-navigation" class="card-navigation"><button id="previous-card" type="button" data-label="previousCard">←</button><p data-text="browseHint"></p><button id="next-card" type="button" data-label="nextCard">→</button></div>
             <div id="card-actions" class="actions"><button id="unknown" data-text="unknown"></button><button id="known" class="primary" data-text="known"></button></div>
             <div id="spelling" hidden>
-              <div class="spelling-prompt"><p class="eyebrow" id="prompt-label"></p><strong id="spelling-word"></strong><p id="spelling-meaning"></p><button id="hide-word" type="button"></button></div>
+              <div class="spelling-prompt"><p class="eyebrow" id="prompt-label"></p><strong id="spelling-word"></strong><p id="spelling-meaning"></p><button id="hide-word" type="button"></button><div id="answer-preview" hidden aria-hidden="true"><p id="preview-label" class="eyebrow"></p><strong id="preview-text" lang="ja"></strong></div></div>
               <div id="verb-choices" class="actions" hidden><button type="button" data-verb="る动词">る verb</button><button type="button" data-verb="う动词">う verb</button><button type="button" data-verb="不规则动词">Irregular</button></div><form id="answer-form"><label for="answer" data-text="answer"></label><div class="answer-row"><input id="answer" lang="ja" autocomplete="off" autocapitalize="off" spellcheck="false"><button id="check" class="primary" type="submit" data-text="check"></button></div></form>
               <p class="muted input-note" data-text="inputHelp"></p><div id="feedback" role="status" aria-live="polite"></div><button id="next" class="primary" hidden data-text="next"></button>
             </div>

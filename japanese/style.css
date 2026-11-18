@@ -5,6 +5,13 @@
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1); --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 * { box-sizing: border-box; }
+.spelling-prompt.is-writing { padding:28px 24px 32px; }
+.spelling-prompt.is-writing #spelling-word { font-size:clamp(1.2rem,2vw,1.7rem);font-weight:500; }
+#answer-preview { margin-top:24px;padding-top:22px;border-top:1px solid var(--line); }
+#answer-preview #preview-text { display:block;font-size:clamp(2.2rem,5vw,3.7rem);line-height:1.45;min-height:1.5em;overflow-wrap:anywhere;letter-spacing:.035em; }
+#answer-preview[data-state="correction"] #preview-text,#answer-preview[data-state="correction"] #preview-label { color:#ae570e; }
+#answer-preview[data-state="correct"] #preview-text { color:#237750; }
+#answer-form #answer { min-height:76px;font-size:clamp(1.4rem,3vw,2rem);padding:16px 18px; }
 select, select::picker(select) { appearance: base-select; }
 select::picker(select) { border: 1px solid #dedbf4; border-radius: 14px; padding: 6px; background: white; box-shadow: 0 12px 32px #25294318; }
 select option { padding: 10px 12px; border-radius: 9px; }

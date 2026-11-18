@@ -73,7 +73,16 @@
       $('prompt-label').textContent=t(activeMode==='te'?'tePrompt':'typePrompt');$('spelling-word').textContent=w.kana;$('spelling-word').lang='ja';$('spelling-meaning').textContent=w.english;
       if(feedbackKey==='verbReview')$('feedback').textContent=t('verbReview',{word:activeMode==='te'?JapaneseCore.teForm(w):typeName(w.type,lang)});
     }
-    favoriteButton($('favorite-word'),w);
+    paintAnswerPreview();favoriteButton($('favorite-word'),w);
+  }
+  function paintAnswerPreview(){
+    const writing=!!session&&!session.done&&['spelling','te'].includes(activeMode);
+    $('answer-preview').hidden=!writing;document.querySelector('.spelling-prompt').classList.toggle('is-writing',writing);
+    if(!writing)return;
+    const w=session.current,expected=activeMode==='te'?JapaneseCore.teForm(w):w.kana;
+    const result=JapaneseCore.answerPreview($('answer').value,checked,feedbackKey==='correct',expected);
+    $('preview-text').textContent=result.text;$('answer-preview').dataset.state=result.state;
+    $('preview-label').textContent=t(result.state==='correction'?'correctAnswer':result.state==='correct'?'correct':'liveAnswer');
   }
   function renderNewWord(){
     $('flashcard').classList.add('is-resetting');
@@ -133,7 +142,8 @@
     if(!$('answer').value.trim()){feedbackKey='enterAnswer';paintStudy();$('answer').focus();return;}
     checked=true;const correct=activeMode==='te'?JapaneseCore.normalize($('answer').value)===JapaneseCore.teForm(session.current):isCorrect(session.current,$('answer').value);feedbackKey=correct?'correct':activeMode==='te'?'verbReview':'incorrect';$('feedback').className=correct?'correct':'incorrect';$('answer').disabled=true;$('check').disabled=true;$('next').hidden=false;$('next').dataset.correct=String(correct);paintStudy();$('next').focus({preventScroll:true});
   });
-  $('answer').addEventListener('compositionstart',()=>{composing=true;});$('answer').addEventListener('compositionend',()=>{setTimeout(()=>{composing=false;},0);});
+  $('answer').addEventListener('input',paintAnswerPreview);
+  $('answer').addEventListener('compositionstart',()=>{composing=true;});$('answer').addEventListener('compositionend',()=>{paintAnswerPreview();setTimeout(()=>{composing=false;},0);});
   $('answer').addEventListener('keydown',event=>{if(event.key==='Enter'&&(event.isComposing||composing||event.keyCode===229))event.preventDefault();});
   document.querySelectorAll('[data-verb]').forEach(button=>button.addEventListener('click',()=>{if(!session||session.done||checked)return;checked=true;const correct=button.dataset.verb===session.current.type;feedbackKey=correct?'correct':'verbReview';$('feedback').className=correct?'correct':'incorrect';document.querySelectorAll('[data-verb]').forEach(b=>{b.disabled=true;b.setAttribute('aria-pressed',String(b===button));});$('next').dataset.correct=String(correct);$('next').hidden=false;paintStudy();$('next').focus({preventScroll:true});}));
   $('next').addEventListener('click',()=>{if(checked)grade($('next').dataset.correct==='true');});

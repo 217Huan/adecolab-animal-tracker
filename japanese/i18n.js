@@ -18,6 +18,8 @@
   pairs.groupHelp=['选择左侧单元及练习设置中的词性／分类，点击加入；可合并多组词汇。勾选后使用合并词表，抽测顺序仍可选随机。词表仅保留在本次页面中。','Choose a lesson and word type/category, then add it. Combine multiple groups and enable the custom set to study them together. Choose Shuffle in settings for random order. This set lasts for this page session.'];
   pairs.customTitle=['自选词表','Custom study set'];
   pairs.removeGroup=['移除这组词汇','Remove this group'];
+  pairs.liveAnswer=['你的答案 · 实时预览','Your answer · live preview'];
+  pairs.correctAnswer=['正确答案','Correct answer'];
   pairs.order=['抽测顺序','Study order'];
   pairs.randomOrder=['随机打乱','Shuffle'];
   pairs.listOrder=['按词汇列表顺序','Word list order'];
