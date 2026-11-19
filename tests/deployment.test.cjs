@@ -6,7 +6,7 @@ test('deployment packages only website runtime assets and resolves local links',
   const config=JSON.parse(fs.readFileSync(path.join(root,'wrangler.jsonc'),'utf8'));
   assert.equal(config.assets.directory,'./dist');
   function entries(dir){return fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?entries(path.join(dir,e.name)):[path.join(dir,e.name)]);}
-  const files=entries(path.join(root,'dist'));assert.equal(files.length,12);
+  const files=entries(path.join(root,'dist'));assert.equal(files.length,13);
   for(const file of files)assert.ok(/\.(html|css|js)$/.test(file)||path.basename(file)==='_redirects');
   assert.equal(fs.readFileSync(path.join(root,'dist/_redirects'),'utf8').trim(),'/ /index.html 200');
   for(const html of ['index.html','japanese.html']){

@@ -33,6 +33,9 @@
   pairs.listeningError=['音频暂时无法播放，请检查网络，或使用下方官方来源链接。','Audio could not play. Check your connection or open the official source below.'];
   pairs.listeningSource=['官方音频与课文','Official audio and lesson'];
   pairs.listeningTerms=['使用说明','Usage guidelines'];
+  pairs.grammarTitle=['▤ 语法','▤ Grammar'];
+  pairs.grammarIntro=['按课本第1–8单元的53个编号语法点整理。点击单元，再展开句型。说明为本站重新整理，例句为自编；不包含后续单元及独立表达笔记。N表示名词，V表示动词。','Study notes for the 53 numbered grammar points in GENKI I Lessons 1–8. Choose a lesson and expand a topic. Explanations are independently summarized and examples are original. Later lessons and separate Expression Notes are excluded. N means noun; V means verb.'];
+  pairs.grammarSource=['本单元语法章节起始页：课本 p.{page} · 所提供PDF第 {pdf} 页（从1计数）。可按同名编号回查原文。','Grammar section begins at textbook p.{page} · page {pdf} in your supplied PDF (counting from 1). Match the numbered topic to consult the textbook.'];
   pairs.order=['抽测顺序','Study order'];
   pairs.randomOrder=['随机打乱','Shuffle'];
   pairs.listOrder=['按词汇列表顺序','Word list order'];

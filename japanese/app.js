@@ -58,7 +58,7 @@
     const clip=listeningClips[Number(value)];$('listening-name').textContent=clip[lang];$('listening-ja').textContent=clip.ja;$('listening-translation').textContent=clip.translation[lang];$('listening-source').href='https://www.irodori.jpf.go.jp/starter/audio/lesson'+clip.lesson+'.html';$('listening-script-source').href='https://www.irodori.jpf.go.jp/assets/data/starter/pdf/X_L'+clip.lesson+'.pdf';
   }
   function loadListening(){const clip=listeningClips[Number($('listening-clip').value)||0];$('listening-audio').pause();$('listening-audio').src='https://www.irodori.jpf.go.jp/assets/data/starter/audio/'+clip.lesson+'/'+encodeURIComponent(clip.file);$('listening-audio').playbackRate=Number($('listening-speed').value);$('listening-error').hidden=true;paintListening();}
-  function showListening(show){listeningActive=show;$('listening-panel').hidden=!show;document.querySelector('.workspace').classList.toggle('listening-view',show);$('listening-tab').setAttribute('aria-pressed',String(show));if(!show)$('listening-audio').pause();paintFolders();}
+  function showListening(show){if(show)showGrammar(false);listeningActive=show;$('listening-panel').hidden=!show;document.querySelector('.workspace').classList.toggle('listening-view',show);$('listening-tab').setAttribute('aria-pressed',String(show));if(!show)$('listening-audio').pause();paintFolders();}
   $('listening-tab').addEventListener('click',()=>showListening(true));
   $('listening-clip').addEventListener('change',loadListening);
   $('listening-speed').addEventListener('change',()=>{$('listening-audio').playbackRate=Number($('listening-speed').value);});
@@ -67,6 +67,23 @@
   $('listening-subtitles').addEventListener('change',()=>{$('listening-transcript').hidden=!$('listening-subtitles').checked;});
   $('listening-replay').addEventListener('click',()=>{const audio=$('listening-audio');audio.currentTime=0;audio.play().catch(()=>{$('listening-error').hidden=false;});});
 
+  let grammarActive=false,grammarLesson=1,grammarRenderedLesson=null;
+  function paintGrammar(){
+    const opened=grammarRenderedLesson===grammarLesson?new Set([...$('grammar-topics').querySelectorAll('details[open]')].map(el=>el.dataset.topic)):null;
+    $('grammar-lessons').replaceChildren();for(let n=1;n<=8;n++){const button=document.createElement('button');button.type='button';button.textContent=t('lesson',{n});button.setAttribute('aria-pressed',String(n===grammarLesson));button.addEventListener('click',()=>{grammarLesson=n;paintGrammar();});$('grammar-lessons').append(button);}
+    $('grammar-heading').textContent=t('lesson',{n:grammarLesson})+' · '+lessons[grammarLesson-1];
+    const page=JapaneseGrammar.starts[grammarLesson-1];$('grammar-source').textContent=t('grammarSource',{page,pdf:page+8});$('grammar-topics').replaceChildren();
+    JapaneseGrammar.topics.filter(topic=>topic.lesson===grammarLesson).forEach((topic,index)=>{
+      const details=document.createElement('details');details.className='grammar-topic';details.dataset.topic=topic.id;details.open=opened?opened.has(topic.id):index===0;
+      const summary=document.createElement('summary');summary.textContent=(index+1)+'. '+topic.title[lang]+' · '+topic.pattern;details.append(summary);
+      const form=document.createElement('p');form.className='grammar-form';form.textContent=topic.form;
+      const explanation=document.createElement('p');explanation.textContent=topic.note[lang];
+      const example=document.createElement('p');example.className='grammar-example';example.lang='ja';example.textContent=topic.example;
+      const translation=document.createElement('p');translation.className='muted';translation.textContent=topic.translation[lang];details.append(form,explanation,example,translation);$('grammar-topics').append(details);
+    });grammarRenderedLesson=grammarLesson;
+  }
+  function showGrammar(show){if(show){showListening(false);paintGrammar();}grammarActive=show;$('grammar-panel').hidden=!show;document.querySelector('.workspace').classList.toggle('grammar-view',show);$('grammar-tab').setAttribute('aria-pressed',String(show));paintFolders();}
+  $('grammar-tab').addEventListener('click',()=>showGrammar(true));
   const verbMode=()=>['te','verbType'].includes($('mode').value);
   const selected=()=>($('use-groups').checked?JapaneseCore.combineGroups(words,customGroups):selectWords(words,lesson,verbMode()?'verb':$('pos').value,verbMode()?'all':$('subtype').value)).filter(w=>(!verbMode()||JapaneseCore.matchesVerbPractice(w,$('mode').value))&&(!$('only-favorites').checked||favorites.ids.has(w.id)));
   const folderTitle=()=>$('use-groups').checked?t('customTitle'):lesson==='all'?t('allLessons'):`${t('lesson',{n:lesson})} · ${lessons[Number(lesson)-1]}`;
@@ -101,9 +118,9 @@
   ['all',1,2,3,4,5,6,7,8].forEach(value=>{
     const button=document.createElement('button');button.type='button';button.dataset.lesson=value;
     const title=document.createElement('span'),sub=document.createElement('small');button.append(title,sub);folderButtons.push({value,button,title,sub});
-    button.addEventListener('click',()=>{showListening(false);lesson=value;paintFolders();updateTypes();});$('folders').append(button);
+    button.addEventListener('click',()=>{showGrammar(false);showListening(false);lesson=value;paintFolders();updateTypes();});$('folders').append(button);
   });
-  function paintFolders(){for(const {value,button,title,sub} of folderButtons){title.textContent=value==='all'?t('allLessons'):t('lesson',{n:value});sub.textContent=value==='all'?t('total',{n:words.length}):lessons[value-1];button.classList.toggle('active',!listeningActive&&lesson===value);button.setAttribute('aria-pressed',String(!listeningActive&&lesson===value));}}
+  function paintFolders(){for(const {value,button,title,sub} of folderButtons){title.textContent=value==='all'?t('allLessons'):t('lesson',{n:value});sub.textContent=value==='all'?t('total',{n:words.length}):lessons[value-1];button.classList.toggle('active',!listeningActive&&!grammarActive&&lesson===value);button.setAttribute('aria-pressed',String(!listeningActive&&lesson===value));}}
   function paintStudy(){
     $('deck-title').textContent=folderTitle();$('settings-note').textContent=t(session?'running':'choose');
     $('round').textContent=session?t('round',{n:session.round}):t('ready');
@@ -171,7 +188,7 @@
     $('account-message').textContent=authBusy?t('working'):accountMessage?t(accountMessage):'';
   }
   function paintLanguage(){
-    paintListening();document.documentElement.lang=lang==='zh'?'zh-CN':'en';document.title=t('pageTitle');paintTheme();
+    paintGrammar();paintListening();document.documentElement.lang=lang==='zh'?'zh-CN':'en';document.title=t('pageTitle');paintTheme();
     document.querySelectorAll('[data-text]').forEach(el=>{el.textContent=t(el.dataset.text);});
     document.querySelectorAll('[data-label]').forEach(el=>{el.setAttribute('aria-label',t(el.dataset.label));});
     $('lesson-header').textContent=lang==='zh'?'单元':'Lesson';$('language').textContent=lang==='zh'?'English':'中文';$('language').setAttribute('aria-label',lang==='zh'?'Switch to English':'切换为中文');

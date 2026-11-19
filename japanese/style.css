@@ -6,6 +6,18 @@
 }
 * { box-sizing: border-box; }
 .workspace.listening-view > :not(#listening-panel) { display:none!important; }
+.workspace.grammar-view > :not(#grammar-panel) { display:none!important; }
+.grammar-panel { min-width:0; }
+.grammar-lessons { display:flex;flex-wrap:wrap;gap:8px;margin:20px 0; }
+.grammar-lessons button { font-size:.8rem;padding:9px 14px; }
+.grammar-lessons button[aria-pressed="true"],#grammar-tab[aria-pressed="true"] { background:var(--accent-soft);color:var(--accent);border-color:var(--accent); }
+html[data-theme="dark"] .grammar-lessons button[aria-pressed="true"] { background:var(--accent-soft);color:var(--accent);border-color:var(--accent); }
+.grammar-topic { border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:14px;overflow-wrap:anywhere; }
+.grammar-topic summary { line-height:1.7; }
+.grammar-topic p { font-size:.9rem;line-height:1.85; }
+.grammar-topic .grammar-form { padding:12px;border-radius:10px;background:var(--accent-soft);color:var(--accent);white-space:pre-line; }
+.grammar-topic .grammar-example { font-size:clamp(1.2rem,3vw,1.6rem); }
+@media(max-width:480px){.grammar-lessons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.grammar-lessons button{padding:9px 4px;font-size:.73rem}.grammar-topic{padding:14px}}
 .listening-tab { width:100%;text-align:left;margin-top:16px;font-size:.85rem;color:var(--accent); }
 .listening-tab[aria-pressed="true"] { background:var(--accent-soft);border-color:var(--accent); }
 .listening-panel { min-width:0; }
