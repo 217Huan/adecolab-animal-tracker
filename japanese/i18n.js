@@ -23,7 +23,7 @@
   pairs.lightMode=['浅色模式','Light mode'];
   pairs.darkMode=['深色模式','Dark mode'];
   pairs.listeningTitle=['♫ 听力练习','♫ Listening practice'];
-  pairs.listeningIntro=['完整的多人情景对话，约33–60秒：姓名国籍、拜访家人和日常作息。难度参考 GENKI 第1–8单元；录音来自《いろどり》，并非 GENKI 原音。字幕转写为假名。','Multi-turn conversations, about 33–60 seconds: names and countries, visiting family, and daily routines. Selected for a level similar to GENKI Lessons 1–8; recordings are from Irodori, not GENKI. Japanese transcripts use kana.'];
+  pairs.listeningIntro=['23段多人情景对话：自我介绍、点餐、宿舍设施、住房、休息日和邀约等。每段约21–75秒。难度参考 GENKI 第1–8单元；录音来自《いろどり》，并非 GENKI 原音。字幕转写为假名。','23 multi-turn conversations on introductions, ordering food, dorm facilities, housing, days off and invitations. About 21–75 seconds each. Selected for a level similar to GENKI Lessons 1–8; recordings are from Irodori, not GENKI. Japanese transcripts use kana.'];
   pairs.listeningScriptSource=['官方课文脚本','Official lesson script'];
   pairs.listeningClip=['选择音频','Choose a clip'];
   pairs.listeningSpeed=['播放速度','Playback speed'];

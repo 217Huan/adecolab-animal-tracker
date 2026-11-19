@@ -1,5 +1,19 @@
 # Listening sources
 
+## 2026-11-18 expansion: 20 additional dialogues (23 total)
+
+New material is stored in `listening-extra.js`. Every MP3 was downloaded from the official playback page and inspected with ffprobe; durations range from 20.746 to 75.216 seconds. Audio files remain on the official server. The Japanese script is transcribed to kana from the corresponding official lesson PDF; Chinese and English translations are learning aids with matching speaker turns. No word-list recordings or isolated greetings are added.
+
+| Irodori lesson | Tracks added | Printed script pages |
+| --- | --- | --- |
+| 05 | 32 | L5-14 |
+| 06 | 01, 02, 03, 15 | L6-15, L6-11 |
+| 07 | 03, 07, 08, 22, 23, 24 | L7-18, L7-19, L7-21, L7-22 |
+| 11 | 17, 18, 19, 20 | L11-16, L11-17 |
+| 12 | 07, 14, 15, 16, 17 | L12-14, L12-15, L12-16 |
+
+Each track links to its own official audio lesson and PDF. Irodori numbering is separate from GENKI; the GENKI vocabulary bank remains limited to Lessons 1–8.
+
 Supplementary Irodori listening worksheet, free to use on AdecoLab. Not GENKI recordings.
 
 - Copyright: The Japan Foundation Japanese-Language Institute, Urawa.

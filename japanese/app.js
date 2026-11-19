@@ -52,7 +52,7 @@
       "en": "Murakami: Good morning.\nPaulo and Yamakawa: Good morning.\nMurakami: You’re both early every day. Paulo, what time do you get up?\nPaulo: At five.\nYamakawa: Five! That’s early.\nPaulo: Yes. I jog every morning. At night, I go to bed at ten thirty.\nMurakami: I see."
     }
   }
-];
+ ].concat(JapaneseListeningExtra.clips);
   function paintListening(){
     const value=$('listening-clip').value||'0';$('listening-clip').replaceChildren(...listeningClips.map((clip,i)=>new Option((i+1)+'. '+clip[lang],String(i))));$('listening-clip').value=value;
     const clip=listeningClips[Number(value)];$('listening-name').textContent=clip[lang];$('listening-ja').textContent=clip.ja;$('listening-translation').textContent=clip.translation[lang];$('listening-source').href='https://www.irodori.jpf.go.jp/starter/audio/lesson'+clip.lesson+'.html';$('listening-script-source').href='https://www.irodori.jpf.go.jp/assets/data/starter/pdf/X_L'+clip.lesson+'.pdf';
