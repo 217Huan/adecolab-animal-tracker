@@ -46,7 +46,7 @@
   pairs.nextCard=['浏览下一张未评分卡片','Browse next ungraded card'];
   pairs.browseHint=['左右滑动切词 · 不改变掌握进度','Swipe to browse · progress stays unchanged'];
   pairs.placeholder=['输入平假名或片假名','Enter hiragana or katakana'];
-  pairs.inputHelp=['请用平假名或片假名拼写，可使用日语键盘或设备的手写输入法。な形容词可带「な」；后缀请保留「〜」。罗马字用于辅助发音。','Write the answer in hiragana or katakana, using a Japanese keyboard or your device’s handwriting input. Na-adjectives may include な. Keep 〜 for suffixes. Romaji is a pronunciation aid.'];
+  pairs.inputHelp=['请用平假名或片假名拼写，可使用日语键盘或设备的手写输入法。な形容词可带「な」；后缀请保留「〜」。罗马字用于辅助发音。空格和额外标点不影响判分，但文字及顺序必须正确。','Write the answer in hiragana or katakana, using a Japanese keyboard or your device’s handwriting input. Na-adjectives may include な. Keep 〜 for suffixes. Romaji is a pronunciation aid. Spaces and incidental punctuation are ignored; characters and their order must still be correct.'];
   const messages={zh:{},en:{}};for(const [key,[zh,en]] of Object.entries(pairs)){messages.zh[key]=zh;messages.en[key]=en;}
   const types={ '名词':'Noun','代词 / 疑问词':'Pronoun / question word','后缀 / 计数':'Suffix / counter','表达':'Expression','指示词 / 疑问词':'Demonstrative / question word','い形容词':'い-adjective','表达 / 后缀':'Expression / suffix','う动词':'う-verb','る动词':'る-verb','不规则动词':'Irregular verb','副词 / 表达':'Adverb / expression','代词 / 副词 / 表达':'Pronoun / adverb / expression','な形容词':'な-adjective','动词表达':'Verb expression','副词 / 表达 / 计数':'Adverb / expression / counter'};
   function t(lang,key,values={}){let result=messages[lang]?.[key]||messages.en[key]||key;for(const [k,v] of Object.entries(values))result=result.replaceAll('{'+k+'}',String(v));return result;}

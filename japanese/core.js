@@ -8,7 +8,7 @@
     return words.filter(w=>(lesson==='all'||w.lesson===Number(lesson))&&(pos==='all'||w.pos===pos)&&(type==='all'||w.type===type));
   }
   function combineGroups(words,groups){return words.filter(w=>groups.some(g=>(g.lesson==='all'||w.lesson===Number(g.lesson))&&(g.pos==='all'||w.pos===g.pos)&&(g.type==='all'||w.type===g.type)));}
-  function normalize(text){return String(text).normalize('NFKC').replace(/[\s　]/gu,'').trim();}
+  function normalize(text){return String(text).normalize('NFKC').replace(/[\s\p{P}]/gu,char=>char==='〜'?char:'');}
   function isCorrect(word,answer){const value=normalize(answer);return !!value&&word.answers.some(a=>normalize(a)===value);}
   function teForm(word){
     const v=word.kana;
