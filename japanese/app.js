@@ -52,7 +52,7 @@
       "en": "Murakami: Good morning.\nPaulo and Yamakawa: Good morning.\nMurakami: You’re both early every day. Paulo, what time do you get up?\nPaulo: At five.\nYamakawa: Five! That’s early.\nPaulo: Yes. I jog every morning. At night, I go to bed at ten thirty.\nMurakami: I see."
     }
   }
- ].concat(JapaneseListeningExtra.clips);
+ ].concat(JapaneseListeningExtra.clips,JapaneseListeningMore.clips);
   function paintListening(){
     const value=$('listening-clip').value||'0';$('listening-clip').replaceChildren(...listeningClips.map((clip,i)=>new Option((i+1)+'. '+clip[lang],String(i))));$('listening-clip').value=value;
     const clip=listeningClips[Number(value)];$('listening-name').textContent=clip[lang];$('listening-transcript').replaceChildren();const translations=clip.translation[lang].split('\n');clip.ja.split('\n').forEach((line,index)=>{const pair=document.createElement('div');pair.className='listening-line';const japanese=document.createElement('p');japanese.className='listening-japanese';japanese.lang='ja';japanese.textContent=line;const translation=document.createElement('p');translation.className='muted listening-translation';translation.lang=lang==='zh'?'zh-CN':'en';translation.textContent=translations[index]||'';pair.append(japanese,translation);$('listening-transcript').append(pair);});$('listening-source').href='https://www.irodori.jpf.go.jp/starter/audio/lesson'+clip.lesson+'.html';$('listening-script-source').href='https://www.irodori.jpf.go.jp/assets/data/starter/pdf/X_L'+clip.lesson+'.pdf';
@@ -137,7 +137,7 @@
     $('flashcard').classList.toggle('is-flipped',flipped);$('flashcard').setAttribute('aria-pressed',String(flipped));
     $('flashcard').querySelector('.card-front').setAttribute('aria-hidden',String(flipped));$('flashcard').querySelector('.card-back').setAttribute('aria-hidden',String(!flipped));
     $('flashcard').setAttribute('aria-label',t('flipLabel',{text:(frontJapanese!==flipped)?`${w.kana}, ${w.romaji}`:w.english}));
-    const onlyOne=session.queue.length-session.index<2;for(const id of ['previous-card','next-card'])$(id).disabled=onlyOne;
+    const onlyOne=session.remaining<2;for(const id of ['previous-card','next-card'])$(id).disabled=onlyOne;
     $('prompt-label').textContent=t(activePrompt==='japanese'?'look':'fromEnglish');$('hide-word').textContent=t(hiddenPrompt?'show':'hide');
     $('spelling-word').textContent=activePrompt==='japanese'?(hiddenPrompt?'••••••':w.kana):w.english;$('spelling-word').lang=activePrompt==='japanese'?'ja':'en';$('spelling-meaning').textContent=activePrompt==='japanese'?w.english:'';
     $('feedback').textContent=feedbackKey?t(feedbackKey,{word:w.kana,reading:w.romaji,meaning:w.english}):'';
@@ -177,7 +177,7 @@
   }
   function start(){const list=selected();if(!list.length||$('start').disabled)return;clearCardMotion();session=new Session(list,Math.random,$('order').value==='random');activeMode=$('mode').value;activeDirection=$('direction').value;activePrompt='english';renderNewWord();}
   function grade(known){if(!session||session.done)return;changeCard(()=>session.grade(known),known?1:-1);}
-  function navigateCard(direction){if(!session||session.done||activeMode!=='cards'||session.queue.length-session.index<2)return;changeCard(()=>session.navigate(direction),direction);}
+  function navigateCard(direction){if(!session||session.done||activeMode!=='cards'||session.remaining<2)return;changeCard(()=>session.navigate(direction),direction);}
   function paintAccount(){
     $('email').required=!recovery;$('password').autocomplete=recovery?'new-password':'current-password';
     $('account-status').textContent=favorites.loading?t('loading'):favorites.loadFailed?t('loadError'):favorites.user?t('signedIn',{email:favorites.user.email||''}):t('guest');

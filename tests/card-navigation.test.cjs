@@ -2,6 +2,14 @@ const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const {Session}=require('../japanese/core.js');
 const words=Array.from({length:4},(_,id)=>({id}));
+test('a shuffled round has a fixed queue and navigation only moves the cursor',()=>{
+ let calls=0;const s=new Session(words,()=>{calls++;return .3;});const order=[...s.queue],initialCalls=calls;
+ for(let n=0;n<20;n++){
+  const current=s.current;s.navigate(1);assert.deepEqual(s.queue,order);s.navigate(-1);assert.equal(s.current,current);assert.deepEqual(s.queue,order);
+ }
+ for(let n=0;n<order.length;n++){assert.equal(s.current,order[n]);assert.equal(s.index,n);s.navigate(1);}
+ assert.equal(calls,initialCalls);assert.equal(s.mastered,0);
+});
 test('browsing forward and backward preserves mastery and returns to the same word',()=>{
   const session=new Session(words,()=>.5),original=session.current;
   session.navigate(1);assert.notEqual(session.current,original);

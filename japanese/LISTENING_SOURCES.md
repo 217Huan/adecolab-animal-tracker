@@ -1,5 +1,18 @@
 # Listening sources
 
+## 2026-11-20 expansion: 20 more dialogues (43 total)
+
+New material is stored in `listening-more.js`. All 20 official MP3s were downloaded for verification with ffprobe (15.898–81.237 seconds). Playback streams the unchanged official files. Kana scripts follow the official PDFs, with Chinese and English translations paired turn by turn. These cover transport, directions, convenience-store checkout, weekends and travel; some expressions extend beyond GENKI Lessons 1–8.
+
+| Irodori lesson | Tracks added | PDF script pages |
+| --- | --- | --- |
+| 13 | 05, 07, 13, 15, 24, 25, 30, 31, 32 | 18–21 |
+| 16 | 29 | 14 |
+| 17 | 04, 05, 06, 10 | 6, 16–17 |
+| 18 | 01, 02, 03, 04, 10, 14 | 5, 11, 14 |
+
+Official lesson pages: https://www.irodori.jpf.go.jp/starter/audio/lesson13.html (also lessons 16–18). Corresponding scripts: https://www.irodori.jpf.go.jp/assets/data/starter/pdf/X_L13.pdf (also X_L16.pdf through X_L18.pdf). Each selection links to its lesson and script page. Usage guidelines were rechecked on 2026-11-20: https://www.irodori.jpf.go.jp/en/privacy.html . Attribution and free access remain unchanged.
+
 ## 2026-11-18 expansion: 20 additional dialogues (23 total)
 
 New material is stored in `listening-extra.js`. Every MP3 was downloaded from the official playback page and inspected with ffprobe; durations range from 20.746 to 75.216 seconds. Audio files remain on the official server. The Japanese script is transcribed to kana from the corresponding official lesson PDF; Chinese and English translations are learning aids with matching speaker turns. No word-list recordings or isolated greetings are added.
